@@ -1,26 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-background: #060816;
+  --color-surface: #0F172A;
+  --color-primary: #3B82F6;
+  --color-purple: #8B5CF6;
+  --color-cyan: #06B6D4;
+  --font-family-sans: 'Inter', sans-serif;
+  --font-family-heading: 'Space Grotesk', sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: #060816;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0F172A; }
+::-webkit-scrollbar-thumb { background: #3B82F6; border-radius: 3px; }
+
+/* Glassmorphism */
+.glass {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Glow */
+.glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+.glow-purple { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+.glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); }
+
+/* Text gradients */
+.text-gradient {
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #06B6D4, #3B82F6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
