@@ -47,13 +47,13 @@ export default function RegisterPage() {
         <div className="min-h-screen bg-black flex items-center justify-center p-6">
             <div
                 className="w-full overflow-hidden rounded-2xl flex"
-                style={{ maxWidth: "1000px", minHeight: "580px" }}
+                style={{ maxWidth: "1000px", height: "620px" }}
             >
                 {/* ── LEFT PANEL — Futuristic City ─────────── */}
                 <div
                     className="hidden lg:flex w-[45%] shrink-0 flex-col justify-between p-10 relative overflow-hidden"
                     style={{
-                        backgroundImage: `url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80')`,
+                        backgroundImage: `url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80')`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                     }}
