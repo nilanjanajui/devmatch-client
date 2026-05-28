@@ -1,13 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useProject } from "@/hooks/useProjects";
 import axiosInstance from "@/lib/axios";
 import ApplyModal from "@/components/projects/ApplyModal";
+import { useAuth } from "@/context/AuthContext";
 
-/* ─── Small helpers ─────────────────────────────────── */
+/* ─── Helpers ─────────────────────────────────── */
 
 function daysUntil(dateStr) {
     if (!dateStr) return null;
@@ -17,15 +18,29 @@ function daysUntil(dateStr) {
 
 function difficultyStyle(difficulty) {
     const map = {
-        Beginner: { color: "#22C55E", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.25)" },
-        Intermediate: { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.25)" },
-        Hard: { color: "#9CA3AF", bg: "rgba(156,163,175,0.08)", border: "rgba(156,163,175,0.2)" },
-        Expert: { color: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
+        Beginner:     { color: "#22C55E", bg: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.25)" },
+        Intermediate: { color: "#F59E0B", bg: "rgba(245,158,11,0.08)",  border: "rgba(245,158,11,0.25)" },
+        Hard:         { color: "#9CA3AF", bg: "rgba(156,163,175,0.08)", border: "rgba(156,163,175,0.2)" },
+        Expert:       { color: "#EF4444", bg: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.25)" },
     };
     return map[difficulty] || map.Hard;
 }
 
 /* ─── Sub-components ─────────────────────────────────── */
+
+function Spinner() {
+    return (
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{
+                width: 36, height: 36, borderRadius: "50%",
+                border: "2px solid rgba(6,182,212,0.15)",
+                borderTopColor: "#06B6D4",
+                animation: "spin 0.8s linear infinite",
+            }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+    );
+}
 
 function TechBadge({ label }) {
     return (
@@ -71,65 +86,70 @@ function SectionHeading({ icon, children }) {
 /* ─── Main Page ─────────────────────────────────── */
 
 export default function ProjectDetailsPage() {
+    // ── 1. All hooks first — no exceptions ──────────────
     const { id } = useParams();
-    const { data: project, isLoading, isError } = useProject(id);
+    const router = useRouter();
+    const { isLoggedIn, isLoading: authLoading } = useAuth();
+    const { data: project, isLoading: projectLoading, isError } = useProject(id);
     const [owner, setOwner] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    // Fetch the owner's full profile for the sidebar card
+    // Redirect if not logged in
+    useEffect(() => {
+        if (!authLoading && !isLoggedIn) {
+            router.push(`/login?from=/projects/${id}`);
+        }
+    }, [isLoggedIn, authLoading, id, router]);
+
+    // Fetch owner profile once project loads
     useEffect(() => {
         if (project?.ownerId) {
             axiosInstance.get(`/users/${project.ownerId}`)
                 .then(({ data }) => setOwner(data))
-                .catch(() => { }); // graceful — ownerName always exists on project
+                .catch(() => {});
         }
     }, [project?.ownerId]);
 
-    /* Loading */
-    if (isLoading) return (
-        <div style={{ minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontFamily: "'Space Grotesk',sans-serif" }}>
-                <div style={{
-                    width: 40, height: 40, borderRadius: "50%",
-                    border: "2px solid rgba(59,130,246,0.2)",
-                    borderTopColor: "#3B82F6",
-                    animation: "spin 0.8s linear infinite",
-                    margin: "0 auto 16px",
-                }} />
-                Loading project…
-                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-            </div>
-        </div>
-    );
+    // ── 2. Conditional returns AFTER all hooks ──────────
 
-    /* Error */
+    // Auth resolving or not logged in → show spinner (redirect is in flight)
+    if (authLoading || !isLoggedIn) return <Spinner />;
+
+    // Project fetching
+    if (projectLoading) return <Spinner />;
+
+    // Project error or missing
     if (isError || !project) return (
         <div style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Space Grotesk',sans-serif", fontSize: 18 }}>Project not found.</p>
-            <Link href="/explore" style={{ color: "#3B82F6", fontSize: 14, textDecoration: "none" }}>← Back to Explore</Link>
+            <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: "'Space Grotesk',sans-serif", fontSize: 18 }}>
+                Project not found.
+            </p>
+            <Link href="/explore" style={{ color: "#3B82F6", fontSize: 14, textDecoration: "none" }}>
+                ← Back to Explore
+            </Link>
         </div>
     );
 
+    // ── 3. Derived values ───────────────────────────────
     const days = daysUntil(project.deadline);
     const diff = difficultyStyle(project.difficulty);
 
+    // ── 4. Render ───────────────────────────────────────
     return (
         <>
             {showModal && <ApplyModal project={project} onClose={() => setShowModal(false)} />}
 
             <div style={{ maxWidth: 1100, margin: "0 auto", padding: "48px 24px 80px" }}>
 
-                {/* ── Top badges + Title ── */}
+                {/* ── Badges + Title ── */}
                 <div style={{ marginBottom: 32 }}>
                     <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
-                        {/* Category badge */}
                         <span style={{
                             fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 20,
                             color: "#22C55E", background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.3)",
                         }}>
                             {project.category || "Active Startup"}
                         </span>
-                        {/* Difficulty badge */}
                         <span style={{
                             fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 20,
                             letterSpacing: "0.06em",
@@ -161,34 +181,33 @@ export default function ProjectDetailsPage() {
                         {/* Project Vision */}
                         <SectionCard>
                             <SectionHeading icon="📄">Project Vision</SectionHeading>
-                            {project.description?.split("\n\n").map((para, i) => (
+                            {project.description?.split("\n\n").map((para, i, arr) => (
                                 <p key={i} style={{
                                     color: "rgba(255,255,255,0.6)", fontSize: 14, lineHeight: 1.85,
-                                    marginBottom: i < project.description.split("\n\n").length - 1 ? 16 : 0,
+                                    marginBottom: i < arr.length - 1 ? 16 : 0,
                                 }}>
                                     {para}
                                 </p>
                             ))}
                         </SectionCard>
 
-                        {/* Core Goals + Timeline — side by side */}
+                        {/* Core Goals + Timeline */}
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
 
-                            {/* Core Goals */}
                             <SectionCard>
                                 <SectionHeading icon="🚩">Core Goals</SectionHeading>
                                 <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
                                     {(project.rolesNeeded?.length
                                         ? [
-                                            `Build for ${project.rolesNeeded[0] || "core"} track`,
+                                            `Build for ${project.rolesNeeded[0]} track`,
                                             `Ship in ${project.estimatedDuration || "3 months"}`,
                                             `Assemble a team of ${project.teamSize}`,
-                                        ]
+                                          ]
                                         : [
                                             "Ship high-quality product",
                                             `Assemble a team of ${project.teamSize}`,
                                             `Complete within ${project.estimatedDuration || "timeline"}`,
-                                        ]
+                                          ]
                                     ).map((goal) => (
                                         <li key={goal} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
@@ -201,14 +220,17 @@ export default function ProjectDetailsPage() {
                                 </ul>
                             </SectionCard>
 
-                            {/* Timeline */}
                             <SectionCard>
                                 <SectionHeading icon="🕐">Timeline</SectionHeading>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                                     {[
                                         { phase: "Phase 1: Kickoff", target: "Immediate", active: true },
                                         { phase: "Phase 2: MVP", target: project.estimatedDuration || "TBD", active: false },
-                                        ...(project.deadline ? [{ phase: "Phase 3: Launch", target: new Date(project.deadline).toLocaleDateString("en-US", { month: "short", year: "numeric" }), active: false }] : []),
+                                        ...(project.deadline ? [{
+                                            phase: "Phase 3: Launch",
+                                            target: new Date(project.deadline).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+                                            active: false,
+                                        }] : []),
                                     ].map((item) => (
                                         <div key={item.phase} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                                             <div style={{
@@ -240,10 +262,8 @@ export default function ProjectDetailsPage() {
                                 <SectionHeading icon="👥">Open Roles</SectionHeading>
                                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
                                     {project.rolesNeeded.map((role, i) => {
-                                        // Parse "Role Name: tech1, tech2" pattern if present, else show role as-is
                                         const [roleName, techStr] = role.includes(":") ? role.split(":") : [role, ""];
                                         const techs = techStr ? techStr.split(",").map(t => t.trim()).filter(Boolean) : [];
-
                                         return (
                                             <div key={i} style={{
                                                 background: "rgba(255,255,255,0.03)",
@@ -251,10 +271,7 @@ export default function ProjectDetailsPage() {
                                                 borderRadius: 12, padding: "16px 18px",
                                             }}>
                                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                                                    <h4 style={{
-                                                        fontFamily: "'Space Grotesk',sans-serif",
-                                                        fontSize: 14, fontWeight: 700, color: "#fff",
-                                                    }}>
+                                                    <h4 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 14, fontWeight: 700, color: "#fff" }}>
                                                         {roleName.trim()}
                                                     </h4>
                                                     <span style={{
@@ -291,7 +308,6 @@ export default function ProjectDetailsPage() {
                             border: "1px solid rgba(255,255,255,0.08)",
                             borderRadius: 16, padding: 20,
                         }}>
-                            {/* Apply button */}
                             <button
                                 onClick={() => setShowModal(true)}
                                 style={{
@@ -308,10 +324,9 @@ export default function ProjectDetailsPage() {
                                 Apply for Project
                             </button>
 
-                            {/* Stats row */}
+                            {/* Stats */}
                             <div style={{
-                                display: "grid", gridTemplateColumns: "1fr 1fr",
-                                gap: 1, marginTop: 16,
+                                display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, marginTop: 16,
                                 background: "rgba(255,255,255,0.05)", borderRadius: 10, overflow: "hidden",
                             }}>
                                 <div style={{ padding: "14px 16px", background: "rgba(15,23,42,0.8)", textAlign: "center" }}>
@@ -331,10 +346,7 @@ export default function ProjectDetailsPage() {
                             {/* Tech Stack */}
                             {project.techStack?.length > 0 && (
                                 <div style={{ marginTop: 20 }}>
-                                    <p style={{
-                                        fontSize: 9, fontWeight: 700, letterSpacing: "0.15em",
-                                        color: "rgba(255,255,255,0.35)", marginBottom: 10,
-                                    }}>
+                                    <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(255,255,255,0.35)", marginBottom: 10 }}>
                                         TECHNOLOGY STACK
                                     </p>
                                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -344,27 +356,22 @@ export default function ProjectDetailsPage() {
                             )}
                         </div>
 
-                        {/* Project Lead card */}
+                        {/* Project Lead */}
                         <div style={{
                             background: "rgba(15,23,42,0.6)",
                             border: "1px solid rgba(255,255,255,0.08)",
                             borderRadius: 16, padding: 20,
                         }}>
-                            <p style={{
-                                fontSize: 9, fontWeight: 700, letterSpacing: "0.15em",
-                                color: "rgba(255,255,255,0.35)", marginBottom: 14,
-                            }}>
+                            <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", color: "rgba(255,255,255,0.35)", marginBottom: 14 }}>
                                 PROJECT LEAD
                             </p>
 
                             <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
-                                {/* Avatar */}
                                 {owner?.image ? (
                                     <Image
                                         src={owner.image}
                                         alt={project.ownerName}
-                                        width={52}
-                                        height={52}
+                                        width={52} height={52}
                                         style={{ borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
                                     />
                                 ) : (
@@ -388,15 +395,11 @@ export default function ProjectDetailsPage() {
                             </div>
 
                             {owner?.bio && (
-                                <p style={{
-                                    fontSize: 12, color: "rgba(255,255,255,0.45)",
-                                    lineHeight: 1.7, fontStyle: "italic",
-                                }}>
+                                <p style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, fontStyle: "italic" }}>
                                     &ldquo;{owner.bio}&rdquo;
                                 </p>
                             )}
 
-                            {/* Social links */}
                             {(owner?.github || owner?.portfolio) && (
                                 <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
                                     {owner.github && (
