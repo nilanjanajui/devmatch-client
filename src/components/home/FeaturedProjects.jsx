@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const projects = [
     {
@@ -44,6 +47,27 @@ const projects = [
     },
 ];
 
+// ── Reusable variants ──────────────────────────────────────────────
+const fadeUp = {
+    hidden: { opacity: 0, y: 32 },
+    show: { opacity: 1, y: 0 },
+};
+
+const fadeLeft = {
+    hidden: { opacity: 0, x: -32 },
+    show: { opacity: 1, x: 0 },
+};
+
+const fadeRight = {
+    hidden: { opacity: 0, x: 32 },
+    show: { opacity: 1, x: 0 },
+};
+
+const staggerContainer = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.12 } },
+};
+
 const Tag = ({ label }) => (
     <span style={{
         fontSize: 10, fontWeight: 700,
@@ -62,8 +86,15 @@ export default function FeaturedProjects() {
         <section style={{ padding: "80px 24px", position: "relative" }}>
             <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
-                {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+                {/* ── Section Header ── */}
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{ duration: 0.55 }}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}
+                >
                     <div>
                         <h2 style={{
                             fontFamily: "'Space Grotesk', sans-serif",
@@ -82,19 +113,28 @@ export default function FeaturedProjects() {
                     }}>
                         View All Projects →
                     </Link>
-                </div>
+                </motion.div>
 
-                {/* Top row: Large + Small */}
+                {/* ── Top Row ── */}
                 <div style={{ display: "grid", gridTemplateColumns: "1.8fr 1fr", gap: 20, marginBottom: 20 }}>
 
                     {/* Large Card — Nexus Protocol */}
-                    <div style={{
-                        background: "#0a0e1e",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: 16, overflow: "hidden",
-                        position: "relative",
-                    }}>
-                        {/* Image */}
+                    <motion.div
+                        variants={fadeLeft}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                        whileHover={{ y: -6, boxShadow: "0 24px 48px rgba(59,130,246,0.15)" }}
+                        style={{
+                            background: "#0a0e1e",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: 16, overflow: "hidden",
+                            position: "relative",
+                            cursor: "pointer",
+                            transition: "border-color 0.2s",
+                        }}
+                    >
                         <div style={{ position: "relative", height: 240, overflow: "hidden" }}>
                             <Image
                                 src={projects[0].image}
@@ -116,7 +156,6 @@ export default function FeaturedProjects() {
                             </div>
                         </div>
 
-                        {/* Content */}
                         <div style={{ padding: "20px 24px 24px" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
                                 <h3 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 700, color: "#fff" }}>
@@ -152,24 +191,37 @@ export default function FeaturedProjects() {
                                 <span style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", display: "flex", alignItems: "center", gap: 6 }}>
                                     <span style={{ fontSize: 15 }}>👥</span> {projects[0].applicants} Applicants
                                 </span>
-                                <button style={{
-                                    padding: "8px 20px", borderRadius: 8,
-                                    background: "linear-gradient(135deg, #3B82F6, #6366F1)",
-                                    border: "none", color: "#fff", fontSize: 13, fontWeight: 600,
-                                    cursor: "pointer", boxShadow: "0 0 16px rgba(59,130,246,0.3)",
-                                }}>
+                                <motion.button
+                                    whileHover={{ scale: 1.05, boxShadow: "0 0 24px rgba(59,130,246,0.5)" }}
+                                    whileTap={{ scale: 0.97 }}
+                                    style={{
+                                        padding: "8px 20px", borderRadius: 8,
+                                        background: "linear-gradient(135deg, #3B82F6, #6366F1)",
+                                        border: "none", color: "#fff", fontSize: 13, fontWeight: 600,
+                                        cursor: "pointer", boxShadow: "0 0 16px rgba(59,130,246,0.3)",
+                                    }}
+                                >
                                     Apply Now
-                                </button>
+                                </motion.button>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Small Card — Vigilant OS */}
-                    <div style={{
-                        background: "#0a0e1e",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: 16, overflow: "hidden",
-                    }}>
+                    <motion.div
+                        variants={fadeRight}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true, amount: 0.2 }}
+                        transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+                        whileHover={{ y: -6, boxShadow: "0 24px 48px rgba(139,92,246,0.15)" }}
+                        style={{
+                            background: "#0a0e1e",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: 16, overflow: "hidden",
+                            cursor: "pointer",
+                        }}
+                    >
                         <div style={{ position: "relative", height: 200, overflow: "hidden" }}>
                             <Image
                                 src={projects[1].image}
@@ -196,33 +248,54 @@ export default function FeaturedProjects() {
                                 <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
                                     {projects[1].slots} Slots left
                                 </span>
-                                <div style={{
-                                    width: 28, height: 28, borderRadius: "50%",
-                                    background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.4)",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: 12, color: "#8B5CF6", cursor: "pointer",
-                                }}>→</div>
+                                <motion.div
+                                    whileHover={{ scale: 1.15, backgroundColor: "rgba(139,92,246,0.3)" }}
+                                    whileTap={{ scale: 0.95 }}
+                                    style={{
+                                        width: 28, height: 28, borderRadius: "50%",
+                                        background: "rgba(139,92,246,0.15)", border: "1px solid rgba(139,92,246,0.4)",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        fontSize: 12, color: "#8B5CF6", cursor: "pointer",
+                                    }}
+                                >→</motion.div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
-                {/* Bottom row: Mini cards + CTA */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+                {/* ── Bottom Row: Mini cards + CTA ── */}
+                <motion.div
+                    variants={staggerContainer}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.2 }}
+                    style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}
+                >
                     {projects.slice(2).map((p) => (
-                        <div key={p.id} style={{
-                            background: "#0a0e1e",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: 14, padding: "20px 20px",
-                            display: "flex", alignItems: "flex-start", gap: 14,
-                        }}>
-                            <div style={{
-                                width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-                                background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.2)",
-                                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
-                            }}>
+                        <motion.div
+                            key={p.id}
+                            variants={fadeUp}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                            whileHover={{ y: -5, borderColor: "rgba(59,130,246,0.35)", boxShadow: "0 16px 32px rgba(59,130,246,0.1)" }}
+                            style={{
+                                background: "#0a0e1e",
+                                border: "1px solid rgba(255,255,255,0.08)",
+                                borderRadius: 14, padding: "20px",
+                                display: "flex", alignItems: "flex-start", gap: 14,
+                                cursor: "pointer",
+                            }}
+                        >
+                            <motion.div
+                                whileHover={{ scale: 1.1, rotate: 5 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                                style={{
+                                    width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+                                    background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.2)",
+                                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18,
+                                }}
+                            >
                                 {p.icon}
-                            </div>
+                            </motion.div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <h4 style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 14, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
                                     {p.title}
@@ -234,28 +307,39 @@ export default function FeaturedProjects() {
                                     LEAD: {p.lead}
                                 </span>
                             </div>
-                        </div>
+                        </motion.div>
                     ))}
 
                     {/* Your Project CTA */}
-                    <div style={{
-                        background: "rgba(59,130,246,0.04)",
-                        border: "1.5px dashed rgba(59,130,246,0.25)",
-                        borderRadius: 14, padding: "20px",
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center",
-                        gap: 8, cursor: "pointer", textAlign: "center",
-                    }}>
-                        <div style={{
-                            width: 34, height: 34, borderRadius: "50%",
-                            background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            fontSize: 20, color: "#3B82F6",
-                        }}>+</div>
+                    <motion.div
+                        variants={fadeUp}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        whileHover={{ y: -5, borderColor: "rgba(59,130,246,0.5)", boxShadow: "0 16px 32px rgba(59,130,246,0.12)" }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                            background: "rgba(59,130,246,0.04)",
+                            border: "1.5px dashed rgba(59,130,246,0.25)",
+                            borderRadius: 14, padding: "20px",
+                            display: "flex", flexDirection: "column",
+                            alignItems: "center", justifyContent: "center",
+                            gap: 8, cursor: "pointer", textAlign: "center",
+                        }}
+                    >
+                        <motion.div
+                            whileHover={{ scale: 1.2, rotate: 90 }}
+                            transition={{ type: "spring", stiffness: 260, damping: 14 }}
+                            style={{
+                                width: 34, height: 34, borderRadius: "50%",
+                                background: "rgba(59,130,246,0.15)", border: "1px solid rgba(59,130,246,0.3)",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 20, color: "#3B82F6",
+                            }}
+                        >+</motion.div>
                         <p style={{ fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.6)" }}>Your Project Here</p>
                         <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)" }}>Post a project and start building.</p>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
+
             </div>
         </section>
     );

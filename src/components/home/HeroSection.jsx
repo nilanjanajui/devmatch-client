@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function HeroSection() {
     return (
@@ -26,43 +29,70 @@ export default function HeroSection() {
                 }} />
             </div>
 
-            <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center", position: "relative" }}>
+            <div style={{
+                maxWidth: 1200, margin: "0 auto", width: "100%",
+                display: "grid", gridTemplateColumns: "1fr 1fr",
+                gap: 64, alignItems: "center", position: "relative",
+            }}>
 
-                {/* Left */}
+                {/* ── LEFT SIDE ── */}
                 <div>
                     {/* Badge */}
-                    <div style={{
-                        display: "inline-flex", alignItems: "center", gap: 8,
-                        background: "rgba(59,130,246,0.1)",
-                        border: "1px solid rgba(59,130,246,0.25)",
-                        borderRadius: 20, padding: "6px 14px",
-                        marginBottom: 28,
-                    }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        style={{
+                            display: "inline-flex", alignItems: "center", gap: 8,
+                            background: "rgba(59,130,246,0.1)",
+                            border: "1px solid rgba(59,130,246,0.25)",
+                            borderRadius: 20, padding: "6px 14px",
+                            marginBottom: 28,
+                        }}
+                    >
                         <span style={{ color: "#3B82F6", fontSize: 12 }}>#</span>
                         <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>
                             Build Startup Teams Faster
                         </span>
-                    </div>
+                    </motion.div>
 
                     {/* Headline */}
-                    <h1 style={{
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontSize: 52,
-                        fontWeight: 700,
-                        lineHeight: 1.15,
-                        marginBottom: 24,
-                        color: "#fff",
-                    }}>
+                    <motion.h1
+                        initial={{ opacity: 0, y: 28 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontSize: 52, fontWeight: 700,
+                            lineHeight: 1.15, marginBottom: 24, color: "#fff",
+                        }}
+                    >
                         Find Developers.<br />
                         <span className="text-gradient-cyan">Build Products.</span><br />
                         Launch Startups.
-                    </h1>
+                    </motion.h1>
 
-                    <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", lineHeight: 1.75, marginBottom: 40, maxWidth: 420 }}>
-                        The premier platform for developer collaboration and startup formation. Connect with elite engineers, join visionary teams, and ship code that matters.
-                    </p>
+                    {/* Subtext */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.35 }}
+                        style={{
+                            fontSize: 16, color: "rgba(255,255,255,0.55)",
+                            lineHeight: 1.75, marginBottom: 40, maxWidth: 420,
+                        }}
+                    >
+                        The premier platform for developer collaboration and startup formation.
+                        Connect with elite engineers, join visionary teams, and ship code that matters.
+                    </motion.p>
 
-                    <div style={{ display: "flex", gap: 16 }}>
+                    {/* Buttons */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        style={{ display: "flex", gap: 16 }}
+                    >
                         <Link href="/explore" style={{
                             padding: "13px 28px", borderRadius: 10,
                             border: "1.5px solid rgba(59,130,246,0.5)",
@@ -83,20 +113,29 @@ export default function HeroSection() {
                         }}>
                             Create Project
                         </Link>
-                    </div>
+                    </motion.div>
                 </div>
 
-                {/* Right — Mock Dashboard */}
-                <div style={{ position: "relative" }}>
-                    {/* Fit Score Badge */}
-                    <div style={{
-                        position: "absolute", top: -16, right: -8, zIndex: 10,
-                        background: "rgba(15,23,42,0.95)",
-                        border: "1px solid rgba(6,182,212,0.35)",
-                        borderRadius: 10, padding: "10px 16px",
-                        display: "flex", alignItems: "center", gap: 10,
-                        boxShadow: "0 0 20px rgba(6,182,212,0.2)",
-                    }}>
+                {/* ── RIGHT SIDE ── */}
+                <motion.div
+                    initial={{ opacity: 0, x: 48 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+                    style={{ position: "relative" }}
+                >
+                    {/* Fit Score Badge — floats independently */}
+                    <motion.div
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+                        style={{
+                            position: "absolute", top: -16, right: -8, zIndex: 10,
+                            background: "rgba(15,23,42,0.95)",
+                            border: "1px solid rgba(6,182,212,0.35)",
+                            borderRadius: 10, padding: "10px 16px",
+                            display: "flex", alignItems: "center", gap: 10,
+                            boxShadow: "0 0 20px rgba(6,182,212,0.2)",
+                        }}
+                    >
                         <div style={{
                             width: 28, height: 28, borderRadius: "50%",
                             background: "rgba(6,182,212,0.15)",
@@ -109,16 +148,20 @@ export default function HeroSection() {
                             <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", fontWeight: 500 }}>PAIR MATCH</div>
                             <div style={{ fontSize: 14, fontWeight: 700, color: "#06B6D4" }}>98% Fit Score</div>
                         </div>
-                    </div>
+                    </motion.div>
 
-                    {/* Dashboard Mockup */}
-                    <div style={{
-                        background: "rgba(10,14,30,0.9)",
-                        border: "1px solid rgba(255,255,255,0.08)",
-                        borderRadius: 16,
-                        overflow: "hidden",
-                        boxShadow: "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
-                    }}>
+                    {/* Dashboard — floats slowly */}
+                    <motion.div
+                        animate={{ y: [0, -14, 0] }}
+                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                        style={{
+                            background: "rgba(10,14,30,0.9)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: 16,
+                            overflow: "hidden",
+                            boxShadow: "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
+                        }}
+                    >
                         {/* Window chrome */}
                         <div style={{
                             background: "rgba(15,23,42,0.8)",
@@ -213,8 +256,9 @@ export default function HeroSection() {
                                 ))}
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
+
             </div>
         </section>
     );
