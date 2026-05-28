@@ -8,11 +8,14 @@ export function middleware(request) {
 
     const isAuthenticated = !!sessionCookie;
     const isDashboard = pathname.startsWith("/dashboard");
+    const isProjectDetail = pathname.match(/^\/projects\/[^/]+$/); // ← ADD THIS
     const isAuthPage = pathname === "/login" || pathname === "/register";
 
-    // Redirect unauthenticated users away from dashboard
-    if (isDashboard && !isAuthenticated) {
-        return NextResponse.redirect(new URL("/login", request.url));
+    // Redirect unauthenticated users away from protected pages
+    if ((isDashboard || isProjectDetail) && !isAuthenticated) { 
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("from", pathname);             
+        return NextResponse.redirect(loginUrl);
     }
 
     // Redirect authenticated users away from login/register
@@ -24,5 +27,5 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/login", "/register"],
+    matcher: ["/dashboard/:path*", "/projects/:id*", "/login", "/register"], 
 };
