@@ -11,8 +11,12 @@ export function AuthProvider({ children }) {
     const isLoggedIn = !!user;
     const isLoading = isPending;
 
+
+    // In your logout function (AuthContext.jsx)
     const logout = async () => {
-        await signOut();
+        await signOut();                                        // Better Auth clears its session
+        await axiosInstance.post("/auth/clear-jwt");            // you clear your JWT
+        setUser(null);
         window.location.href = "/login";
     };
 

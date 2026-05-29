@@ -12,9 +12,9 @@ export function middleware(request) {
     const isAuthPage = pathname === "/login" || pathname === "/register";
 
     // Redirect unauthenticated users away from protected pages
-    if ((isDashboard || isProjectDetail) && !isAuthenticated) { 
+    if ((isDashboard || isProjectDetail) && !isAuthenticated) {
         const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("from", pathname);             
+        loginUrl.searchParams.set("from", pathname);
         return NextResponse.redirect(loginUrl);
     }
 
