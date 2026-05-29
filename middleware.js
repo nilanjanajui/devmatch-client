@@ -27,5 +27,5 @@ export function middleware(request) {
 }
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/login", "/register"],
+    matcher: ["/dashboard/:path*", "/projects/:id", "/login", "/register"],
 };

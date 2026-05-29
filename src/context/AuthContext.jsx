@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext } from "react";
 import { useSession, signOut } from "@/lib/authClient";
+import axiosInstance from "@/lib/axios";   
 
 const AuthContext = createContext(null);
 
@@ -11,12 +12,10 @@ export function AuthProvider({ children }) {
     const isLoggedIn = !!user;
     const isLoading = isPending;
 
-
-    // In your logout function (AuthContext.jsx)
     const logout = async () => {
-        await signOut();                                        // Better Auth clears its session
-        await axiosInstance.post("/auth/clear-jwt");            // you clear your JWT
-        setUser(null);
+        await signOut();
+        await axiosInstance.post("/auth/clear-jwt");
+        // setUser(null) ← removed, session resets via useSession()
         window.location.href = "/login";
     };
 
@@ -27,7 +26,6 @@ export function AuthProvider({ children }) {
     );
 }
 
-// Use this hook anywhere in the app instead of calling useSession() directly
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
