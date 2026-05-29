@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
 import { Plus, ChevronDown, Check, X, Clock } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 function StatusBadge({ status }) {
     const map = {
@@ -24,7 +25,11 @@ function ApplicantCard({ app, projectId }) {
     const { mutate: updateStatus } = useMutation({
         mutationFn: ({ id, status }) =>
             axiosInstance.patch(`/applications/${id}`, { status }),
-        onSuccess: () => qc.invalidateQueries(["project-applicants", projectId]),
+        onSuccess: (_, { status }) => {
+            qc.invalidateQueries(["project-applicants", projectId]);
+            toast.success(status === "accepted" ? "Applicant accepted." : "Applicant rejected.");
+        },
+        onError: () => toast.error("Failed to update. Please try again."),
     });
 
     return (

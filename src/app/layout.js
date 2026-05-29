@@ -1,8 +1,9 @@
 import "./globals.css";
 import Providers from "./providers";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 
 export const metadata = {
-  title: "DevMatch — Find Developers. Build Startups. Launch Together.",
+  title: "DevMatch - Find Developers. Build Startups. Launch Together.",
   description:
     "The premier platform for developer collaboration and startup team formation.",
 };
@@ -12,6 +13,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark">
       <body>
         <Providers>{children}</Providers>
+        <ScrollToTop />
       </body>
     </html>
   );

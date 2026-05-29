@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useApply } from "@/hooks/useProjects";
+import { toast } from "sonner";
 
 /* ── Cyan monospace label ── */
 const CyanLabel = ({ children }) => (
@@ -103,8 +104,13 @@ export default function ApplyModal({ project, onClose }) {
                 message,
             },
             {
-                onSuccess: () => setSubmitted(true),
-                onError: () => alert("Failed to submit. Please try again."),
+                onSuccess: () => {
+                    toast.success("Application submitted!");
+                    setShowModal(false);
+                },
+                onError: () => toast.error("Failed to submit application."),
+
+
             }
         );
     };
@@ -185,7 +191,7 @@ export default function ApplyModal({ project, onClose }) {
                                 margin: "0 auto 20px",
                             }}>
                                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                                    <path d="M5 14l6 6L23 8" stroke="#06B6D4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M5 14l6 6L23 8" stroke="#06B6D4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
                             <h3 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 22, fontWeight: 800, color: "#fff", marginBottom: 10 }}>
@@ -304,8 +310,8 @@ export default function ApplyModal({ project, onClose }) {
                                                 color: "rgba(255,255,255,0.25)",
                                             }}>
                                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                                    <path d="M8 4.5l-4 5M6 4.5h2.5V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                                    <rect x="1" y="1" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2"/>
+                                                    <path d="M8 4.5l-4 5M6 4.5h2.5V7" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <rect x="1" y="1" width="12" height="12" rx="3" stroke="currentColor" strokeWidth="1.2" />
                                                 </svg>
                                             </div>
                                             <input
@@ -335,8 +341,8 @@ export default function ApplyModal({ project, onClose }) {
                                                 color: "rgba(255,255,255,0.25)",
                                             }}>
                                                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2"/>
-                                                    <path d="M1 7h12M7 1c-1.5 1.5-2.5 3.5-2.5 6S5.5 11.5 7 13c1.5-1.5 2.5-3.5 2.5-6S8.5 2.5 7 1z" stroke="currentColor" strokeWidth="1.2"/>
+                                                    <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2" />
+                                                    <path d="M1 7h12M7 1c-1.5 1.5-2.5 3.5-2.5 6S5.5 11.5 7 13c1.5-1.5 2.5-3.5 2.5-6S8.5 2.5 7 1z" stroke="currentColor" strokeWidth="1.2" />
                                                 </svg>
                                             </div>
                                             <input
@@ -419,7 +425,7 @@ export default function ApplyModal({ project, onClose }) {
                                     >
                                         {/* Arrow icon */}
                                         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                            <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
                                         {isPending ? "Submitting…" : "Submit Application"}
                                     </button>
