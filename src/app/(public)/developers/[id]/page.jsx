@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-    Github, Globe, Calendar, Layers,
+    Globe, Calendar, Layers,
     ArrowUpRight, ChevronRight, Code2
 } from "lucide-react";
 import { useDeveloper } from "@/hooks/useDeveloper";
@@ -165,6 +165,20 @@ function ProfileSkeleton() {
 
 // ── main page ──────────────────────────────────────────────────────────────
 
+function GithubIcon({ size = 16, className = "" }) {
+    return (
+        <svg
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className={className}
+        >
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+        </svg>
+    );
+}
+
 export default function DeveloperProfile() {
     const { id } = useParams();
     const { data: developer, isLoading, isError } = useDeveloper(id);
@@ -242,126 +256,126 @@ export default function DeveloperProfile() {
                             </motion.p>
                         )}
 
-{/* Links + join date */}
-<motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 0.35 }}
-    className="flex flex-wrap items-center gap-4 mt-4"
->
-    {developer.github && (
-        <a
-            href={developer.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors"
-        >
-            <Github size={14} />
-            GitHub
-            <ArrowUpRight size={11} />
-        </a>
-    )}
-    {developer.portfolio && (
-        <a
-            href={developer.portfolio}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors"
-        >
-            <Globe size={14} />
-            Portfolio
-            <ArrowUpRight size={11} />
-        </a>
-    )}
-    <span className="flex items-center gap-1.5 text-white/30 text-xs font-mono">
-        <Calendar size={13} />
-        Joined {formatJoinDate(developer.createdAt)}
-    </span>
-</motion.div>
-            </div>
-        </div>
-    </motion.div>
-
-{/* Stats row */}
-<motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.42 }}
-    className="flex flex-wrap gap-3 mt-8"
->
-    <StatPill label="Projects" value={projectCount} />
-    <StatPill label="Skills" value={skillCount} />
-    <StatPill label="Joined" value={formatJoinDate(developer.createdAt).split(" ")[1]} />
-</motion.div>
-
-{/* ── Tech Stack ────────────────────────────────────── */}
-{developer.skills?.length > 0 && (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-            className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
-        >
-            <div className="flex items-center gap-2 mb-5">
-                <Layers size={15} className="text-[#00e5ff]" />
-                <h2 className="text-white font-mono font-semibold text-sm">Tech Stack</h2>
-            </div>
-            <div className="flex flex-wrap gap-3">
-                {developer.skills.map((skill, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0.85 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4 + i * 0.05 }}
-                    >
-                        <SkillChip skill={skill} />
-                    </motion.div>
-                ))}
-            </div>
-        </motion.div>
-)}
-
-{/* ── Projects ──────────────────────────────────────── */}
-{developer.projects?.length > 0 && (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45 }}
-            className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
-        >
-            <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                    <Code2 size={15} className="text-[#00e5ff]" />
-                    <h2 className="text-white font-mono font-semibold text-sm">Projects</h2>
+                        {/* Links + join date */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.35 }}
+                            className="flex flex-wrap items-center gap-4 mt-4"
+                        >
+                            {developer.github && (
+                                <a
+                                    href={developer.github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors"
+                                >
+                                    <GithubIcon size={14} />
+                                    GitHub
+                                    <ArrowUpRight size={11} />
+                                </a>
+                            )}
+                            {developer.portfolio && (
+                                <a
+                                    href={developer.portfolio}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors"
+                                >
+                                    <Globe size={14} />
+                                    Portfolio
+                                    <ArrowUpRight size={11} />
+                                </a>
+                            )}
+                            <span className="flex items-center gap-1.5 text-white/30 text-xs font-mono">
+                                <Calendar size={13} />
+                                Joined {formatJoinDate(developer.createdAt)}
+                            </span>
+                        </motion.div>
+                    </div>
                 </div>
-                <Link href={`/explore?owner=${id}`}>
-                    <span className="flex items-center gap-1 text-white/30 text-xs font-mono hover:text-[#00e5ff] transition-colors">
-                        View all <ChevronRight size={13} />
-                    </span>
-                </Link>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {developer.projects.map((project, i) => (
-                    <ProjectCard key={project._id} project={project} index={i} />
-                ))}
-            </div>
-        </motion.div>
-)}
+            {/* Stats row */}
+            <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.42 }}
+                className="flex flex-wrap gap-3 mt-8"
+            >
+                <StatPill label="Projects" value={projectCount} />
+                <StatPill label="Skills" value={skillCount} />
+                <StatPill label="Joined" value={formatJoinDate(developer.createdAt).split(" ")[1]} />
+            </motion.div>
 
-{/* Empty state if no projects AND no skills */}
-{!developer.skills?.length && !developer.projects?.length && (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="bg-[#0d1421] border border-white/5 rounded-3xl p-12 text-center"
-        >
-            <p className="text-white/20 font-mono text-sm">
-                This developer hasn&apos;t added any details yet.
-            </p>
-        </motion.div>
-    )}
-</div>
+            {/* ── Tech Stack ────────────────────────────────────── */}
+            {developer.skills?.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 }}
+                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
+                >
+                    <div className="flex items-center gap-2 mb-5">
+                        <Layers size={15} className="text-[#00e5ff]" />
+                        <h2 className="text-white font-mono font-semibold text-sm">Tech Stack</h2>
+                    </div>
+                    <div className="flex flex-wrap gap-3">
+                        {developer.skills.map((skill, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.85 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.4 + i * 0.05 }}
+                            >
+                                <SkillChip skill={skill} />
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
+            )}
+
+            {/* ── Projects ──────────────────────────────────────── */}
+            {developer.projects?.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.45 }}
+                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
+                >
+                    <div className="flex items-center justify-between mb-5">
+                        <div className="flex items-center gap-2">
+                            <Code2 size={15} className="text-[#00e5ff]" />
+                            <h2 className="text-white font-mono font-semibold text-sm">Projects</h2>
+                        </div>
+                        <Link href={`/explore?owner=${id}`}>
+                            <span className="flex items-center gap-1 text-white/30 text-xs font-mono hover:text-[#00e5ff] transition-colors">
+                                View all <ChevronRight size={13} />
+                            </span>
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {developer.projects.map((project, i) => (
+                            <ProjectCard key={project._id} project={project} index={i} />
+                        ))}
+                    </div>
+                </motion.div>
+            )}
+
+            {/* Empty state if no projects AND no skills */}
+            {!developer.skills?.length && !developer.projects?.length && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-12 text-center"
+                >
+                    <p className="text-white/20 font-mono text-sm">
+                        This developer hasn&apos;t added any details yet.
+                    </p>
+                </motion.div>
+            )}
+        </div>
     );
 }
