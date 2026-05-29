@@ -11,9 +11,9 @@ const iconMap = {
 
 export default function ActivityFeed({ items = [] }) {
     return (
-        <div className="bg-[#0d1421] border border-white/5 rounded-2xl p-5 h-full">
+        <div className="bg-[#0d1421] border border-white/5 rounded-2xl p-5 h-full flex flex-col">
             <h3 className="text-white font-mono font-semibold text-sm mb-4">Recent Activity</h3>
-            <div className="space-y-4">
+            <div className="space-y-4 flex-1">
                 {items.map((item, i) => {
                     const Icon = iconMap[item.type] || Code2;
                     return (
