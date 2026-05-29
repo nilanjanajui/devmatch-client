@@ -35,9 +35,17 @@ function ApplicantCard({ app, projectId }) {
             className="flex items-center justify-between bg-white/3 border border-white/5 rounded-xl px-4 py-3"
         >
             <div>
-                <p className="text-white text-sm font-mono">{app.applicantName ?? app.applicantId}</p>
-                <p className="text-white/40 text-xs font-mono mt-0.5">{app.role} · {app.seniority}</p>
+                {/* Name now links to their profile */}
+                <Link href={`/developers/${app.applicantId}`}>
+                    <p className="text-white text-sm font-mono hover:text-[#00e5ff] transition-colors cursor-pointer">
+                        {app.applicantName ?? app.applicantId}
+                    </p>
+                </Link>
+                <p className="text-white/40 text-xs font-mono mt-0.5">
+                    {app.role} · {app.seniority}
+                </p>
             </div>
+
             <div className="flex items-center gap-2">
                 {app.status === "pending" ? (
                     <>

@@ -18,10 +18,10 @@ function daysUntil(dateStr) {
 
 function difficultyStyle(difficulty) {
     const map = {
-        Beginner:     { color: "#22C55E", bg: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.25)" },
-        Intermediate: { color: "#F59E0B", bg: "rgba(245,158,11,0.08)",  border: "rgba(245,158,11,0.25)" },
-        Hard:         { color: "#9CA3AF", bg: "rgba(156,163,175,0.08)", border: "rgba(156,163,175,0.2)" },
-        Expert:       { color: "#EF4444", bg: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.25)" },
+        Beginner: { color: "#22C55E", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.25)" },
+        Intermediate: { color: "#F59E0B", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.25)" },
+        Hard: { color: "#9CA3AF", bg: "rgba(156,163,175,0.08)", border: "rgba(156,163,175,0.2)" },
+        Expert: { color: "#EF4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)" },
     };
     return map[difficulty] || map.Hard;
 }
@@ -106,7 +106,7 @@ export default function ProjectDetailsPage() {
         if (project?.ownerId) {
             axiosInstance.get(`/users/${project.ownerId}`)
                 .then(({ data }) => setOwner(data))
-                .catch(() => {});
+                .catch(() => { });
         }
     }, [project?.ownerId]);
 
@@ -202,12 +202,12 @@ export default function ProjectDetailsPage() {
                                             `Build for ${project.rolesNeeded[0]} track`,
                                             `Ship in ${project.estimatedDuration || "3 months"}`,
                                             `Assemble a team of ${project.teamSize}`,
-                                          ]
+                                        ]
                                         : [
                                             "Ship high-quality product",
                                             `Assemble a team of ${project.teamSize}`,
                                             `Complete within ${project.estimatedDuration || "timeline"}`,
-                                          ]
+                                        ]
                                     ).map((goal) => (
                                         <li key={goal} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                                             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
@@ -385,9 +385,11 @@ export default function ProjectDetailsPage() {
                                     </div>
                                 )}
                                 <div>
-                                    <p style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 15, fontWeight: 700, color: "#fff" }}>
-                                        {project.ownerName}
-                                    </p>
+                                    <Link href={`/developers/${project.ownerId}`}>
+                                        <span className="text-[#00e5ff] hover:underline font-mono text-sm cursor-pointer">
+                                            {project.ownerName}
+                                        </span>
+                                    </Link>
                                     <p style={{ fontSize: 12, color: "#06B6D4", marginTop: 2 }}>
                                         {owner?.experienceLevel ? `${owner.experienceLevel} Engineer` : "Project Lead"}
                                     </p>
