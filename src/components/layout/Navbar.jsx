@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { LayoutDashboard, User, LogOut, ChevronDown } from "lucide-react";
+import { LayoutDashboard, User, LogOut, ChevronDown, Bell } from "lucide-react";
 
 const navLinks = [
     { label: "Home",      href: "/"          },
@@ -13,18 +13,14 @@ const navLinks = [
     { label: "Teams",     href: "/teams"     },
 ];
 
-// ── Client-only flag ────────────────────────────────────────────────────────
-// useSyncExternalStore: server renders false, client renders true.
-// No setState inside an effect → no ESLint error.
 function useIsClient() {
     return useSyncExternalStore(
-        () => () => {},   // subscribe: no-op (value never changes after hydration)
-        () => true,       // getSnapshot      (client)
-        () => false       // getServerSnapshot (server / SSR)
+        () => () => {},
+        () => true,
+        () => false
     );
 }
 
-// ── Avatar ──────────────────────────────────────────────────────────────────
 function UserAvatar({ user, size = 36 }) {
     if (user?.image) {
         return (
@@ -34,9 +30,8 @@ function UserAvatar({ user, size = 36 }) {
                 alt={user.name ?? "avatar"}
                 referrerPolicy="no-referrer"
                 style={{
-                    width: size, height: size,
-                    borderRadius: "50%", objectFit: "cover",
-                    border: "2px solid rgba(0,229,255,0.35)",
+                    width: size, height: size, borderRadius: "50%",
+                    objectFit: "cover", border: "2px solid rgba(0,229,255,0.35)",
                     flexShrink: 0, display: "block",
                 }}
             />
@@ -57,7 +52,6 @@ function UserAvatar({ user, size = 36 }) {
     );
 }
 
-// ── Dropdown ────────────────────────────────────────────────────────────────
 function ProfileDropdown({ user, logout, onClose }) {
     const router = useRouter();
 
@@ -93,7 +87,6 @@ function ProfileDropdown({ user, logout, onClose }) {
             padding: "6px",
             zIndex: 9999,
         }}>
-            {/* User info header */}
             <div style={{
                 padding: "10px 12px 12px",
                 borderBottom: "1px solid rgba(255,255,255,0.06)",
@@ -119,7 +112,6 @@ function ProfileDropdown({ user, logout, onClose }) {
                 </div>
             </div>
 
-            {/* Menu items */}
             {items.map(({ icon: Icon, label, onClick, danger }) => (
                 <button
                     key={label}
@@ -134,15 +126,12 @@ function ProfileDropdown({ user, logout, onClose }) {
                         textAlign: "left",
                     }}
                     onMouseEnter={e => {
-                        e.currentTarget.style.background = danger
-                            ? "rgba(239,68,68,0.1)"
-                            : "rgba(255,255,255,0.06)";
+                        e.currentTarget.style.background = danger ? "rgba(239,68,68,0.1)" : "rgba(255,255,255,0.06)";
                         e.currentTarget.style.color = danger ? "#fca5a5" : "#fff";
                     }}
                     onMouseLeave={e => {
                         e.currentTarget.style.background = "none";
-                        e.currentTarget.style.color = danger
-                            ? "#f87171" : "rgba(255,255,255,0.7)";
+                        e.currentTarget.style.color = danger ? "#f87171" : "rgba(255,255,255,0.7)";
                     }}
                 >
                     <Icon size={14} />
@@ -153,7 +142,6 @@ function ProfileDropdown({ user, logout, onClose }) {
     );
 }
 
-// ── Navbar ───────────────────────────────────────────────────────────────────
 export default function Navbar() {
     const pathname = usePathname();
     const { user, isLoggedIn, isLoading, logout } = useAuth();
@@ -161,7 +149,6 @@ export default function Navbar() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // Close dropdown on outside click
     useEffect(() => {
         if (!dropdownOpen) return;
         function handleClick(e) {
@@ -185,46 +172,98 @@ export default function Navbar() {
 
         if (isLoggedIn && user) {
             return (
-                <div ref={dropdownRef} style={{ position: "relative" }}>
+                <>
+                    {/* ── Bell icon ── */}
                     <button
-                        onClick={() => setDropdownOpen(v => !v)}
                         style={{
-                            display: "flex", alignItems: "center", gap: 8,
+                            width: 36, height: 36, borderRadius: "50%",
                             background: "rgba(255,255,255,0.04)",
                             border: "1px solid rgba(255,255,255,0.09)",
-                            borderRadius: 99, padding: "4px 10px 4px 4px",
-                            cursor: "pointer", transition: "border-color 0.2s",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            cursor: "pointer", color: "rgba(255,255,255,0.55)",
+                            transition: "border-color 0.2s, color 0.2s",
+                            flexShrink: 0,
                         }}
-                        onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(0,229,255,0.3)"}
-                        onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)"}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.borderColor = "rgba(0,229,255,0.3)";
+                            e.currentTarget.style.color = "#fff";
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)";
+                            e.currentTarget.style.color = "rgba(255,255,255,0.55)";
+                        }}
                     >
-                        <UserAvatar user={user} size={28} />
-                        <span style={{
-                            color: "rgba(255,255,255,0.85)", fontSize: 13,
-                            fontFamily: "monospace", fontWeight: 500,
-                            maxWidth: 96, overflow: "hidden",
-                            textOverflow: "ellipsis", whiteSpace: "nowrap",
-                        }}>
-                            {user.name?.split(" ")[0] ?? "Me"}
-                        </span>
-                        <ChevronDown
-                            size={14}
-                            style={{
-                                color: "rgba(255,255,255,0.4)",
-                                transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
-                                transition: "transform 0.2s",
-                            }}
-                        />
+                        <Bell size={15} />
                     </button>
 
-                    {dropdownOpen && (
-                        <ProfileDropdown
-                            user={user}
-                            logout={logout}
-                            onClose={() => setDropdownOpen(false)}
-                        />
-                    )}
-                </div>
+                    {/* ── Dashboard quick link ── */}
+                    <Link
+                        href="/dashboard"
+                        style={{
+                            fontSize: 13, fontWeight: 500,
+                            color: "rgba(255,255,255,0.75)",
+                            textDecoration: "none",
+                            padding: "7px 16px",
+                            borderRadius: 8,
+                            border: "1px solid rgba(255,255,255,0.09)",
+                            background: "rgba(255,255,255,0.04)",
+                            transition: "border-color 0.2s, color 0.2s",
+                            whiteSpace: "nowrap",
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.borderColor = "rgba(59,130,246,0.4)";
+                            e.currentTarget.style.color = "#fff";
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)";
+                            e.currentTarget.style.color = "rgba(255,255,255,0.75)";
+                        }}
+                    >
+                        Dashboard
+                    </Link>
+
+                    {/* ── Avatar pill + dropdown ── */}
+                    <div ref={dropdownRef} style={{ position: "relative" }}>
+                        <button
+                            onClick={() => setDropdownOpen(v => !v)}
+                            style={{
+                                display: "flex", alignItems: "center", gap: 8,
+                                background: "rgba(255,255,255,0.04)",
+                                border: "1px solid rgba(255,255,255,0.09)",
+                                borderRadius: 99, padding: "4px 10px 4px 4px",
+                                cursor: "pointer", transition: "border-color 0.2s",
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(0,229,255,0.3)"}
+                            onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)"}
+                        >
+                            <UserAvatar user={user} size={28} />
+                            <span style={{
+                                color: "rgba(255,255,255,0.85)", fontSize: 13,
+                                fontFamily: "monospace", fontWeight: 500,
+                                maxWidth: 96, overflow: "hidden",
+                                textOverflow: "ellipsis", whiteSpace: "nowrap",
+                            }}>
+                                {user.name?.split(" ")[0] ?? "Me"}
+                            </span>
+                            <ChevronDown
+                                size={14}
+                                style={{
+                                    color: "rgba(255,255,255,0.4)",
+                                    transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                                    transition: "transform 0.2s",
+                                }}
+                            />
+                        </button>
+
+                        {dropdownOpen && (
+                            <ProfileDropdown
+                                user={user}
+                                logout={logout}
+                                onClose={() => setDropdownOpen(false)}
+                            />
+                        )}
+                    </div>
+                </>
             );
         }
 
@@ -269,7 +308,6 @@ export default function Navbar() {
                 padding: "0 24px", height: 64,
                 display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-                {/* Logo */}
                 <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
                     <div style={{
                         width: 32, height: 32, borderRadius: "50%",
@@ -282,7 +320,6 @@ export default function Navbar() {
                     </span>
                 </Link>
 
-                {/* Nav links */}
                 <div style={{ display: "flex", alignItems: "center", gap: 36 }}>
                     {navLinks.map((link) => {
                         const active = pathname === link.href;
@@ -305,7 +342,6 @@ export default function Navbar() {
                     })}
                 </div>
 
-                {/* Auth area */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     {renderAuth()}
                 </div>

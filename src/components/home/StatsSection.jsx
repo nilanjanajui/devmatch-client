@@ -4,34 +4,25 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 
 const stats = [
-    { value: "25k", label: "THOUSAND DEVELOPERS", num: 25, suffix: "k" },
-    { value: "12k", label: "ACTIVE PROJECTS", num: 12, suffix: "k" },
-    { value: "850+", label: "TEAMS FORMED", num: 850, suffix: "+" },
-    { value: "95k", label: "SUCCESS RATE %", num: 95, suffix: "k" },
+    { label: "THOUSAND DEVELOPERS", num: 25, suffix: "k" },
+    { label: "ACTIVE PROJECTS",     num: 12, suffix: "k" },
+    { label: "TEAMS FORMED",        num: 850, suffix: "+" },
+    { label: "SUCCESS RATE %",      num: 95, suffix: "k" },
 ];
 
-// Counts up from 0 to target once triggered
 function CountUp({ target, suffix, trigger }) {
     const [display, setDisplay] = useState(0);
 
     useEffect(() => {
         if (!trigger) return;
-        let start = 0;
-        const duration = 1800;
-        const stepTime = 16;
-        const steps = duration / stepTime;
-        const increment = target / steps;
-
+        let val = 0;
+        const steps = 1800 / 16;
+        const inc = target / steps;
         const timer = setInterval(() => {
-            start += increment;
-            if (start >= target) {
-                setDisplay(target);
-                clearInterval(timer);
-            } else {
-                setDisplay(Math.floor(start));
-            }
-        }, stepTime);
-
+            val += inc;
+            if (val >= target) { setDisplay(target); clearInterval(timer); }
+            else setDisplay(Math.floor(val));
+        }, 16);
         return () => clearInterval(timer);
     }, [trigger, target]);
 
@@ -55,7 +46,6 @@ export default function StatsSection() {
             <div style={{
                 maxWidth: 1200, margin: "0 auto",
                 display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
-                gap: 16,
             }}>
                 {stats.map((s, i) => (
                     <motion.div
@@ -63,23 +53,12 @@ export default function StatsSection() {
                         initial={{ opacity: 0, y: 24 }}
                         animate={inView ? { opacity: 1, y: 0 } : {}}
                         transition={{ duration: 0.55, delay: i * 0.1, ease: "easeOut" }}
-                        style={{ textAlign: "center", padding: "12px 0" }}
+                        style={{
+                            textAlign: "center", padding: "12px 0",
+                            position: "relative",  /* ← fix: needed for divider */
+                            borderLeft: i !== 0 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                        }}
                     >
-                        {/* Divider line that grows in */}
-                        {i !== 0 && (
-                            <motion.div
-                                initial={{ scaleY: 0 }}
-                                animate={inView ? { scaleY: 1 } : {}}
-                                transition={{ duration: 0.4, delay: i * 0.1 }}
-                                style={{
-                                    position: "absolute",
-                                    left: 0, top: "20%", height: "60%", width: 1,
-                                    background: "rgba(255,255,255,0.06)",
-                                    transformOrigin: "top",
-                                }}
-                            />
-                        )}
-
                         <div style={{
                             fontFamily: "'Space Grotesk', sans-serif",
                             fontSize: 44, fontWeight: 700,
@@ -87,8 +66,7 @@ export default function StatsSection() {
                             WebkitBackgroundClip: "text",
                             WebkitTextFillColor: "transparent",
                             backgroundClip: "text",
-                            marginBottom: 8,
-                            lineHeight: 1,
+                            marginBottom: 8, lineHeight: 1,
                         }}>
                             <CountUp target={s.num} suffix={s.suffix} trigger={inView} />
                         </div>
