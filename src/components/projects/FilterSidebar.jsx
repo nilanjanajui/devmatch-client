@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 
 const CATEGORIES = ["Web Systems", "Mobile / Native", "AI & ML Research", "Cybersecurity", "DevOps & Infrastructure"];
