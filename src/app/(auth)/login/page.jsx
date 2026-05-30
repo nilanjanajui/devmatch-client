@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "@/lib/authClient";
+import { toast } from "sonner";
 
 export default function LoginPage() {
-    const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -20,12 +19,18 @@ export default function LoginPage() {
         try {
             const result = await signIn.email({ email, password });
             if (result?.error) {
-                setError("Invalid email or password. Please try again.");
+                const msg = "Invalid email or password. Please try again.";
+                setError(msg);
+                toast.error(msg);
             } else {
-                router.push("/");
+                // ✅ FIX: full page reload so Better Auth session cookie is
+                // read fresh — same pattern as logout() in AuthContext
+                window.location.href = "/";
             }
         } catch {
-            setError("Invalid email or password. Please try again.");
+            const msg = "Something went wrong. Please try again.";
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -107,13 +112,18 @@ export default function LoginPage() {
                         Access your developer dashboard.
                     </p>
 
+                    {/* ✅ Inline error banner (also fires toast above) */}
                     {error && (
                         <div style={{
                             color: "#f87171", fontSize: "13px", borderRadius: "10px",
                             padding: "10px 16px", marginBottom: 20,
                             background: "rgba(239,68,68,0.08)",
                             borderWidth: "1px", borderStyle: "solid", borderColor: "rgba(239,68,68,0.2)",
+                            display: "flex", alignItems: "center", gap: 8,
                         }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
                             {error}
                         </div>
                     )}
@@ -222,7 +232,7 @@ export default function LoginPage() {
                         <div style={{ flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.07)" }} />
                     </div>
 
-                    {/* Social */}
+                    {/* ✅ Social buttons — callbackURL: "/" sends user to home after OAuth */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                         {[
                             {

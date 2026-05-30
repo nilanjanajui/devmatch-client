@@ -13,17 +13,18 @@ const navLinks = [
     { label: "Teams",     href: "/teams"     },
 ];
 
-// ── Client-only flag using useSyncExternalStore ────────────────────────────
-// Returns false on server, true on client — no setState, no ESLint error
+// ── Client-only flag ────────────────────────────────────────────────────────
+// useSyncExternalStore: server renders false, client renders true.
+// No setState inside an effect → no ESLint error.
 function useIsClient() {
     return useSyncExternalStore(
-        () => () => {},          // subscribe: no-op, never changes
-        () => true,              // getSnapshot (client): true
-        () => false              // getServerSnapshot: false
+        () => () => {},   // subscribe: no-op (value never changes after hydration)
+        () => true,       // getSnapshot      (client)
+        () => false       // getServerSnapshot (server / SSR)
     );
 }
 
-// ── Avatar ─────────────────────────────────────────────────────────────────
+// ── Avatar ──────────────────────────────────────────────────────────────────
 function UserAvatar({ user, size = 36 }) {
     if (user?.image) {
         return (
@@ -56,7 +57,7 @@ function UserAvatar({ user, size = 36 }) {
     );
 }
 
-// ── Dropdown ───────────────────────────────────────────────────────────────
+// ── Dropdown ────────────────────────────────────────────────────────────────
 function ProfileDropdown({ user, logout, onClose }) {
     const router = useRouter();
 
@@ -152,7 +153,7 @@ function ProfileDropdown({ user, logout, onClose }) {
     );
 }
 
-// ── Navbar ─────────────────────────────────────────────────────────────────
+// ── Navbar ───────────────────────────────────────────────────────────────────
 export default function Navbar() {
     const pathname = usePathname();
     const { user, isLoggedIn, isLoading, logout } = useAuth();
