@@ -13,6 +13,9 @@ const navLinks = [
     { label: "Teams",     href: "/teams"     },
 ];
 
+const avatarSrc = user?.image || user?.picture || user?.avatar || "";
+
+
 function useIsClient() {
     return useSyncExternalStore(
         () => () => {},
@@ -26,7 +29,7 @@ function UserAvatar({ user, size = 36 }) {
         return (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-                src={user.image}
+                src={avatarSrc}
                 alt={user.name ?? "avatar"}
                 referrerPolicy="no-referrer"
                 style={{

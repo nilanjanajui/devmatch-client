@@ -224,7 +224,7 @@ export default function RegisterPage() {
                         ].map(({ label, provider, icon }) => (
                             <button
                                 key={provider}
-                                onClick={() => signIn.social({ provider, callbackURL: "/dashboard" })}
+                                onClick={() => signIn.social({ provider, callbackURL: "/callback?next=/" })}
                                 style={{
                                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                                     padding: "10px", borderRadius: "10px", cursor: "pointer",

@@ -1,14 +1,26 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "@/lib/authClient";
 
 export default function AuthCallback() {
     const router = useRouter();
+    const search = useSearchParams();
+    const next = search.get("next") || "/";
+    const { data: session, isPending } = useSession();
 
     useEffect(() => {
-        document.cookie = "auth_status=1; path=/; max-age=604800; SameSite=Lax; Secure";
-        router.replace("/dashboard");
-    }, [router]);
+        if (isPending) return;
+        if (session?.user) {
+            document.cookie = "auth_status=1; path=/; max-age=604800; SameSite=Lax; Secure";
+            router.replace(next);
+        } else {
+            router.replace("/login");
+        }
+    }, [isPending, session, router, next]);
+
+
+
 
     return (
         <div style={{

@@ -23,9 +23,7 @@ export default function LoginPage() {
                 setError(msg);
                 toast.error(msg);
             } else {
-                // ✅ FIX: full page reload so Better Auth session cookie is
-                // read fresh — same pattern as logout() in AuthContext
-                window.location.href = "/";
+                window.location.href = "/callback?next=/";
             }
         } catch {
             const msg = "Something went wrong. Please try again.";
@@ -257,7 +255,7 @@ export default function LoginPage() {
                         ].map(({ label, provider, icon }) => (
                             <button
                                 key={provider}
-                                onClick={() => signIn.social({ provider, callbackURL: "/" })}
+                                onClick={() => signIn.social({ provider, callbackURL: "/callback?next=/" })}
                                 style={{
                                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                                     padding: "11px", borderRadius: "12px", cursor: "pointer",
