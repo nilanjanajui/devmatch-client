@@ -18,9 +18,12 @@ export default function LoginPage() {
         setLoading(true);
         setError("");
         try {
-            await signIn.email({ email, password, callbackURL: "/dashboard" });
-            document.cookie = "auth_status=1; path=/; max-age=604800; SameSite=Lax; Secure"; // ← add this
-            router.push("/dashboard");
+            const result = await signIn.email({ email, password });
+            if (result?.error) {
+                setError("Invalid email or password. Please try again.");
+            } else {
+                router.push("/");
+            }
         } catch {
             setError("Invalid email or password. Please try again.");
         } finally {
@@ -244,7 +247,7 @@ export default function LoginPage() {
                         ].map(({ label, provider, icon }) => (
                             <button
                                 key={provider}
-                                onClick={() => signIn.social({ provider, callbackURL: "/auth/callback" })}
+                                onClick={() => signIn.social({ provider, callbackURL: "/" })}
                                 style={{
                                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                                     padding: "11px", borderRadius: "12px", cursor: "pointer",
