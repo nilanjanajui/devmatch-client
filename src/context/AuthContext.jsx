@@ -15,7 +15,8 @@ export function AuthProvider({ children }) {
     const logout = async () => {
         await signOut();
         await axiosInstance.post("/auth/clear-jwt");
-        // setUser(null) ← removed, session resets via useSession()
+        // Clear the auth_status cookie used by middleware + private layout
+        document.cookie = "auth_status=; path=/; max-age=0";
         window.location.href = "/login";
     };
 

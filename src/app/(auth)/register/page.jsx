@@ -34,6 +34,8 @@ export default function RegisterPage() {
         setError("");
         try {
             await signUp.email({ name, email, password, callbackURL: "/dashboard" });
+            // Set the auth_status cookie so middleware + private layout allow dashboard access
+            document.cookie = "auth_status=1; path=/; max-age=604800; SameSite=Lax";
             router.push("/dashboard");
         } catch {
             setError("Registration failed. This email may already be in use.");

@@ -9,6 +9,9 @@ function CallbackInner() {
 
     useEffect(() => {
         const next = searchParams.get("next") || "/";
+        // Set the auth_status cookie so middleware + private layout know the user is logged in.
+        // max-age=604800 = 7 days (matches typical session length)
+        document.cookie = "auth_status=1; path=/; max-age=604800; SameSite=Lax";
         router.replace(next);
     }, [router, searchParams]);
 
