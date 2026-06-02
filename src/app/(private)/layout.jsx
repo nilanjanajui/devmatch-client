@@ -20,11 +20,6 @@ export default function PrivateLayout({ children }) {
             router.push("/login");
             return;
         }
-        // Session resolved and says logged out → cookie is stale, clear and redirect
-        if (!isLoading && !isLoggedIn) {
-            document.cookie = "auth_status=; path=/; max-age=0";
-            router.push("/login");
-        }
     }, [authed, isLoggedIn, isLoading, router]);
 
     // No cookie = go to login, show brief spinner while redirecting

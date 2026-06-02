@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 export function middleware(request) {
     const { pathname } = request.nextUrl;
 
@@ -12,11 +10,8 @@ export function middleware(request) {
     if (isAuthPage && isAuthenticated) {
         return NextResponse.redirect(new URL("/", request.url));
     }
-
-    return NextResponse.next();
-    // Dashboard protection is now handled by (private)/layout.jsx
 }
 
 export const config = {
-    matcher: ["/login", "/register"],
+    matcher: [],
 };
