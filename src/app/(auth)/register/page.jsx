@@ -10,6 +10,7 @@ export default function RegisterPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [photoUrl, setPhotoUrl] = useState("");
     const [agreed, setAgreed] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -29,14 +30,23 @@ export default function RegisterPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!agreed) return setError("Please agree to the Terms of Service.");
-        if (password.length < 8) return setError("Password must be at least 8 characters.");
+        if (password.length < 6) return setError("Password must be at least 6 characters.");
+        if (!/[A-Z]/.test(password)) return setError("Password must include at least one uppercase letter.");
+        if (!/[a-z]/.test(password)) return setError("Password must include at least one lowercase letter.");
         setLoading(true);
         setError("");
         try {
-            await signUp.email({ name, email, password, callbackURL: "/dashboard" });
-            // Set the auth_status cookie so middleware + private layout allow dashboard access
-            document.cookie = "auth_status=1; path=/; max-age=604800; SameSite=Lax";
-            router.push("/dashboard");
+            const result = await signUp.email({
+                name,
+                email,
+                password,
+                image: photoUrl.trim() || undefined,
+            });
+            if (result?.error) {
+                setError(result.error.message || "Registration failed. This email may already be in use.");
+                return;
+            }
+            router.push("/login");
         } catch {
             setError("Registration failed. This email may already be in use.");
         } finally {
@@ -294,6 +304,27 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
+                        {/* Photo URL */}
+                        <div>
+                            <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "#475569", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
+                                Photo URL <span style={{ color: "#334155", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>(optional)</span>
+                            </label>
+                            <div style={{ position: "relative" }}>
+                                <input
+                                    type="url" placeholder="https://example.com/avatar.jpg"
+                                    value={photoUrl} onChange={(e) => setPhotoUrl(e.target.value)}
+                                    style={inputBase}
+                                    onFocus={(e) => { e.target.style.borderColor = "rgba(96,165,250,0.45)"; e.target.style.backgroundColor = "rgba(255,255,255,0.06)"; }}
+                                    onBlur={(e) => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.backgroundColor = "rgba(255,255,255,0.04)"; }}
+                                />
+                                <span style={{ position: "absolute", right: 13, top: "50%", transform: "translateY(-50%)", color: "#334155" }}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+
                         {/* Password */}
                         <div>
                             <label style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "#475569", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>
@@ -323,7 +354,7 @@ export default function RegisterPage() {
                                 ))}
                             </div>
                             <p style={{ fontSize: "11px", marginTop: 6, color: "#334155" }}>
-                                Minimum 8 characters with at least one special character.
+                                Min 6 characters, must include uppercase and lowercase.
                                 {password.length > 0 && strength > 0 && (
                                     <span style={{ marginLeft: 6, fontWeight: 600, color: strengthColors[strength] }}>
                                         {strengthLabels[strength]}
