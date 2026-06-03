@@ -71,7 +71,7 @@ export default function Sidebar() {
     return (
         <>
             {/* Desktop sidebar — 200px wide */}
-            <aside className="hidden md:flex fixed left-0 top-0 h-full w-[200px] bg-[#0d1421] border-r border-white/5 flex-col z-30">
+            <aside className="hidden md:flex fixed left-0 top-0 h-full w-50 bg-[#0d1421] border-r border-white/5 flex-col z-30">
                 <SidebarContent pathname={pathname} onNavClick={() => { }} />
             </aside>
 
@@ -99,7 +99,7 @@ export default function Sidebar() {
                             animate={{ x: 0 }}
                             exit={{ x: -200 }}
                             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed left-0 top-0 h-full w-[200px] bg-[#0d1421] border-r border-white/5 z-50 md:hidden"
+                            className="fixed left-0 top-0 h-full w-50 bg-[#0d1421] border-r border-white/5 z-50 md:hidden"
                         >
                             <button
                                 onClick={() => setMobileOpen(false)}
