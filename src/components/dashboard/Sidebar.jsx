@@ -4,14 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    LayoutDashboard, FolderKanban, FileText, Settings, Plus, Menu, X
+    LayoutDashboard, FolderKanban, MessageSquare, BarChart2, Settings, Plus, Menu, X
 } from "lucide-react";
 
 const navItems = [
-    { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Projects", href: "/dashboard/projects", icon: FolderKanban },
-    { label: "Applications", href: "/dashboard/applications", icon: FileText },
-    { label: "Profile", href: "/dashboard/profile", icon: Settings },
+    { label: "Overview",     href: "/dashboard",                  icon: LayoutDashboard },
+    { label: "Projects",     href: "/dashboard/projects",         icon: FolderKanban   },
+    { label: "Messages",     href: "/dashboard/messages",         icon: MessageSquare  },
+    { label: "Analytics",    href: "/dashboard/analytics",        icon: BarChart2      },
+    { label: "Settings",     href: "/dashboard/settings",         icon: Settings       },
 ];
 
 function SidebarContent({ pathname, onNavClick }) {
