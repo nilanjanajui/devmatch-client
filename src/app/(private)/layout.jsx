@@ -15,14 +15,12 @@ export default function PrivateLayout({ children }) {
     const authed = hasAuthCookie();
 
     useEffect(() => {
-        // No cookie → not logged in, redirect immediately (no network call needed)
         if (!authed) {
             router.push("/login");
             return;
         }
     }, [authed, isLoggedIn, isLoading, router]);
 
-    // No cookie = go to login, show brief spinner while redirecting
     if (!authed) {
         return (
             <div className="flex min-h-screen bg-[#0a0f1a] items-center justify-center">
@@ -34,7 +32,7 @@ export default function PrivateLayout({ children }) {
     return (
         <div className="flex min-h-screen bg-[#0a0f1a]">
             <Sidebar />
-            <main className="flex-1 ml-0 md:ml-50 p-4 md:p-8 overflow-y-auto">
+            <main className="flex-1 ml-0 md:ml-[200px] p-4 md:p-8 overflow-y-auto">
                 {children}
             </main>
         </div>
