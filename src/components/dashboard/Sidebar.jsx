@@ -4,16 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    LayoutDashboard, FolderKanban, FileText,
-    MessageSquare, BarChart2, Settings, Plus, Menu, X
+    LayoutDashboard, FolderKanban, FileText, Settings, Plus, Menu, X
 } from "lucide-react";
 
 const navItems = [
     { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { label: "Projects", href: "/dashboard/projects", icon: FolderKanban },
-    { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
-    { label: "Analytics", href: "/dashboard/analytics", icon: BarChart2 },
-    { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    { label: "Applications", href: "/dashboard/applications", icon: FileText },
+    { label: "Profile", href: "/dashboard/profile", icon: Settings },
 ];
 
 function SidebarContent({ pathname, onNavClick }) {
@@ -35,11 +33,10 @@ function SidebarContent({ pathname, onNavClick }) {
                         <Link key={href} href={href} onClick={onNavClick}>
                             <motion.div
                                 whileHover={{ x: 2 }}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-mono transition-colors ${
-                                    active
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-mono transition-colors ${active
                                         ? "bg-[#00e5ff]/10 text-[#00e5ff] border-l-2 border-[#00e5ff]"
                                         : "text-white/50 hover:text-white/80 hover:bg-white/5"
-                                }`}
+                                    }`}
                             >
                                 <Icon size={16} />
                                 <span>{label}</span>
@@ -74,7 +71,7 @@ export default function Sidebar() {
         <>
             {/* Desktop sidebar — 200px wide */}
             <aside className="hidden md:flex fixed left-0 top-0 h-full w-50 bg-[#0d1421] border-r border-white/5 flex-col z-30">
-                <SidebarContent pathname={pathname} onNavClick={() => {}} />
+                <SidebarContent pathname={pathname} onNavClick={() => { }} />
             </aside>
 
             {/* Mobile hamburger */}

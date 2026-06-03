@@ -99,13 +99,13 @@ export default function DashboardOverview() {
     const mounted = useHasMounted();
 
     const firstName = mounted ? (user?.name?.split(" ")[0] ?? "there") : "there";
-    const fullName  = mounted ? (user?.name ?? "Developer")            : "Developer";
-    const avatar    = mounted ? (user?.name ?? "D").charAt(0)          : "D";
+    const fullName = mounted ? (user?.name ?? "Developer") : "Developer";
+    const avatar = mounted ? (user?.name ?? "D").charAt(0) : "D";
 
     // Fetch real data
     const { data: myProjects = [] } = useQuery({
         queryKey: ["my-projects"],
-        queryFn: () => axiosInstance.get("/projects?mine=true").then(r => r.data),
+        queryFn: () => axiosInstance.get("/projects?mine=true").then(r => r.data.projects ?? []),
         enabled: !!user?.id,
     });
 
@@ -123,14 +123,14 @@ export default function DashboardOverview() {
 
     // Compute real stats
     const totalApplicants = myProjects.reduce((sum, p) => sum + (p.application_count ?? 0), 0);
-    const acceptedApps    = myApplications.filter(a => a.status === "accepted").length;
-    const hasAnyData      = myProjects.length > 0 || myApplications.length > 0 || profile?.skills?.length > 0;
+    const acceptedApps = myApplications.filter(a => a.status === "accepted").length;
+    const hasAnyData = myProjects.length > 0 || myApplications.length > 0 || profile?.skills?.length > 0;
 
     const stats = [
-        { label: "Projects Created",      value: String(myProjects.length),  badge: myProjects.length > 0 ? "active" : "start now", icon: FolderOpen  },
-        { label: "Applications Received", value: String(totalApplicants),    badge: totalApplicants > 0 ? `${totalApplicants} total` : "none yet",    icon: Users       },
-        { label: "Accepted",              value: String(acceptedApps),       badge: acceptedApps > 0 ? "congrats!" : "pending",      icon: CheckCircle },
-        { label: "Profile Views",         value: "—",                        badge: "coming soon",                                    icon: Eye         },
+        { label: "Projects Created", value: String(myProjects.length), badge: myProjects.length > 0 ? "active" : "start now", icon: FolderOpen },
+        { label: "Applications Received", value: String(totalApplicants), badge: totalApplicants > 0 ? `${totalApplicants} total` : "none yet", icon: Users },
+        { label: "Accepted", value: String(acceptedApps), badge: acceptedApps > 0 ? "congrats!" : "pending", icon: CheckCircle },
+        { label: "Profile Views", value: "—", badge: "coming soon", icon: Eye },
     ];
 
     // Build activity from real data
