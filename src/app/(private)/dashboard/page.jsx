@@ -1,444 +1,476 @@
 "use client";
-import { useHasMounted } from "@/hooks/useHasMounted";
-import Image from "next/image";
+
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { BarChart, Bar, XAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import {
-    FolderOpen, Users, CheckCircle, Eye, Plus, ArrowRight,
-    Compass, User, Zap, Mail, GitBranch, Globe
+    FolderPlus, Compass, BadgeCheck,
+    ArrowRight, ExternalLink, Edit, Lightbulb, Users,
 } from "lucide-react";
-import StatsCard from "@/components/dashboard/StatsCard";
-import ActivityFeed from "@/components/dashboard/ActivityFeed";
+
+// ── swap this import path to match your auth context ──
 import { useAuth } from "@/context/AuthContext";
-import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/lib/axios";
 
-const chartData = [
-    { day: "Mon", apps: 30 }, { day: "Tue", apps: 65 },
-    { day: "Wed", apps: 50 }, { day: "Thu", apps: 90 },
-    { day: "Fri", apps: 75 }, { day: "Sat", apps: 110 },
-    { day: "Sun", apps: 130 },
-];
+export default function DashboardOverview() {
+    const { user } = useAuth();
+    const firstName =
+        user?.displayName?.split(" ")[0] ||
+        user?.email?.split("@")[0] ||
+        "Developer";
 
-const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload?.length) {
-        return (
-            <div className="bg-[#0d1421] border border-[#00e5ff]/20 rounded-lg px-3 py-2">
-                <p className="text-[#00e5ff] text-xs font-mono">{label}: {payload[0].value}</p>
-            </div>
-        );
-    }
-    return null;
-};
-
-// ── Empty state when user has no data yet ─────────────────────────────────
-function EmptyDashboard({ firstName }) {
     return (
-        <div className="pb-10">
-            {/* Hero header */}
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-                <h1 className="font-heading text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">
-                    Welcome to the Hub,{" "}
-                    <span className="text-gradient-cyan" suppressHydrationWarning>{firstName}.</span>
-                </h1>
-                <p className="text-white/50 text-base max-w-xl leading-relaxed">
-                    Your journey as a developer collaborator starts here. Let&apos;s build something
-                    incredible. Connect with elite engineers, join cutting-edge missions, and
-                    manifest your code into reality.
-                </p>
-            </motion.div>
+        <div className="min-h-screen" style={{ fontFamily: "'Inter', sans-serif" }}>
 
-            {/* Initialize Your Journey */}
-            <section className="mb-10">
-                <p className="text-white/25 text-[11px] font-mono uppercase tracking-[0.18em] mb-5">
-                    Initialize Your Journey
-                </p>
+            {/* ── Hero ── */}
+            <section className="relative pt-24 pb-16 px-12 overflow-hidden">
+                {/* ambient glows */}
+                <div
+                    className="absolute top-0 right-0 rounded-full pointer-events-none"
+                    style={{
+                        width: 500, height: 500,
+                        background: "rgba(173, 198, 255, 0.1)",
+                        filter: "blur(120px)",
+                        marginRight: -256, marginTop: -256,
+                    }}
+                />
+                <div
+                    className="absolute bottom-0 left-0 rounded-full pointer-events-none"
+                    style={{
+                        width: 300, height: 300,
+                        background: "rgba(76, 215, 246, 0.05)",
+                        filter: "blur(80px)",
+                        marginLeft: -128, marginBottom: -128,
+                    }}
+                />
 
-                {/* Row 1 — large card + narrow card */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    {/* Create Project  (2 cols) */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                        className="md:col-span-2 bg-[#0d1421] border border-white/5 rounded-2xl p-7 relative overflow-hidden hover:border-white/10 transition-colors group"
+                <div className="relative z-10 max-w-4xl">
+                    <h2
+                        className="mb-4 font-bold"
+                        style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontSize: "48px",
+                            lineHeight: 1.1,
+                            letterSpacing: "-0.02em",
+                            color: "#dae2fd",
+                        }}
                     >
-                        <span className="absolute top-5 right-5 text-white/30 text-[11px] font-mono border border-white/10 rounded-full px-2.5 py-0.5">
-                            Recommended
-                        </span>
-                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5 group-hover:border-[#00e5ff]/20 transition-colors">
-                            <FolderOpen size={22} className="text-[#00e5ff]" />
-                        </div>
-                        <h3 className="font-heading text-white font-bold text-2xl mb-2">
-                            Create Your First Project
-                        </h3>
-                        <p className="text-white/40 text-sm mb-6 leading-relaxed max-w-sm">
-                            Launch your own vision and recruit the best talent on DevMatch.
-                            Set your stack, define your goals, and start building.
-                        </p>
-                        <Link href="/dashboard/projects/new">
-                            <motion.span
-                                whileHover={{ x: 3 }}
-                                className="inline-flex items-center gap-1.5 text-white text-sm font-semibold font-mono hover:text-[#00e5ff] transition-colors"
-                            >
-                                Get Started <ArrowRight size={14} />
-                            </motion.span>
-                        </Link>
-                    </motion.div>
-
-                    {/* Explore Missions  (1 col) */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                        className="bg-[#0d1421] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-colors group"
+                        Welcome to the Hub,{" "}
+                        <span style={{ color: "#adc6ff" }}>{firstName}.</span>
+                    </h2>
+                    <p
+                        style={{
+                            fontSize: "18px",
+                            lineHeight: 1.6,
+                            color: "rgba(194, 198, 214, 0.8)",
+                            maxWidth: 672,
+                        }}
                     >
-                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5 group-hover:border-[#7c3aed]/20 transition-colors">
-                            <Compass size={22} className="text-[#7c3aed]" />
-                        </div>
-                        <h3 className="font-heading text-white font-semibold text-lg mb-2">
-                            Explore Active Missions
-                        </h3>
-                        <p className="text-white/40 text-sm mb-5 leading-relaxed">
-                            Find projects that match your tech stack and join existing teams.
-                        </p>
-                        <Link href="/explore">
-                            <span className="text-[#00e5ff] text-sm font-mono hover:underline">
-                                Find Projects ↗
-                            </span>
-                        </Link>
-                    </motion.div>
-                </div>
-
-                {/* Row 2 — two equal cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Complete Profile */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                        className="bg-[#0d1421] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-colors group"
-                    >
-                        <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-5 group-hover:border-blue-500/20 transition-colors">
-                            <User size={22} className="text-blue-400" />
-                        </div>
-                        <h3 className="font-heading text-white font-semibold text-lg mb-2">
-                            Complete Your Profile
-                        </h3>
-                        <p className="text-white/40 text-sm mb-5 leading-relaxed">
-                            Showcase your skills and experience to get recruited for top missions.
-                        </p>
-                        <Link href="/dashboard/profile">
-                            <span className="text-white/50 text-xs font-mono hover:text-white transition-colors">
-                                Update Skills ✏
-                            </span>
-                        </Link>
-                    </motion.div>
-
-                    {/* Collaboration quote */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-                        className="bg-[#0d1421] border border-dashed border-white/5 rounded-2xl p-6 relative overflow-hidden"
-                    >
-                        <h3 className="font-heading text-white font-semibold text-lg mb-3">
-                            Collaboration is the Core
-                        </h3>
-                        <p className="text-white/40 text-sm italic leading-relaxed">
-                            &ldquo;The best software isn&apos;t built alone. It&apos;s forged in the fires of
-                            collective intelligence and diverse perspective.&rdquo;
-                        </p>
-                        {/* Subtle dot pattern */}
-                        <div
-                            className="absolute bottom-0 right-0 w-28 h-28 opacity-[0.07]"
-                            style={{
-                                backgroundImage: "radial-gradient(circle, #00e5ff 1px, transparent 1px)",
-                                backgroundSize: "8px 8px",
-                            }}
-                        />
-                    </motion.div>
+                        Your journey as a developer collaborator starts here. Let's build
+                        something incredible. Connect with elite engineers, join
+                        cutting-edge missions, and manifest your code into reality.
+                    </p>
                 </div>
             </section>
 
-            {/* Quick Tips + Community Highlights */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                {/* Quick Tips */}
-                <div>
-                    <p className="text-white/25 text-[11px] font-mono uppercase tracking-[0.18em] mb-5">
-                        Quick Tips
-                    </p>
-                    <div className="space-y-5">
-                        {[
-                            {
-                                Icon: Zap, iconColor: "text-[#00e5ff]",
-                                bg: "bg-[#00e5ff]/10 border-[#00e5ff]/20",
-                                title: "Optimize your tech stack",
-                                desc: "Tags help the algorithm match you with relevant projects.",
-                            },
-                            {
-                                Icon: Users, iconColor: "text-[#7c3aed]",
-                                bg: "bg-[#7c3aed]/10 border-[#7c3aed]/20",
-                                title: "Engage in Community",
-                                desc: "Join the #general channel to introduce yourself to other devs.",
-                            },
-                        ].map(({ Icon, iconColor, bg, title, desc }, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3 + i * 0.1 }}
-                                className="flex items-start gap-4"
-                            >
-                                <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${bg}`}>
-                                    <Icon size={15} className={iconColor} />
-                                </div>
-                                <div>
-                                    <p className="text-white text-sm font-semibold mb-0.5">{title}</p>
-                                    <p className="text-white/40 text-xs leading-relaxed">{desc}</p>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
+            {/* ── Bento Grid ── */}
+            <section className="px-12 mb-16">
+                <h3
+                    className="mb-6 uppercase"
+                    style={{
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: "12px",
+                        letterSpacing: "0.2em",
+                        fontWeight: 600,
+                        color: "#adc6ff",
+                    }}
+                >
+                    Initialize Your Journey
+                </h3>
 
-                {/* Community Highlights */}
-                <div>
-                    <p className="text-white/25 text-[11px] font-mono uppercase tracking-[0.18em] mb-5">
-                        Community Highlights
-                    </p>
-                    <motion.div
-                        initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }}
-                        className="bg-[#0d1421] border border-white/5 rounded-2xl p-5"
-                    >
-                        <div className="flex items-start gap-3 mb-4">
-                            <div
-                                className="w-10 h-10 rounded-full flex items-center justify-center text-[#0a0f1a] font-bold text-sm shrink-0"
-                                style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)" }}
-                            >
-                                S
+                <div className="grid grid-cols-12 gap-4">
+
+                    {/* ── Large "Create" card ── */}
+                    <div className="col-span-8 group">
+                        <div
+                            className="glass-card neon-glow-primary shimmer-border h-full p-8 rounded-xl flex flex-col justify-between transition-all duration-500 cursor-pointer"
+                        >
+                            <div className="flex justify-between items-start">
+                                <div
+                                    className="p-4 rounded-xl"
+                                    style={{
+                                        background: "rgba(173, 198, 255, 0.1)",
+                                        border: "1px solid rgba(173, 198, 255, 0.2)",
+                                    }}
+                                >
+                                    <FolderPlus size={36} style={{ color: "#adc6ff" }} />
+                                </div>
+                                <span
+                                    className="py-1 px-3 rounded-full"
+                                    style={{
+                                        fontFamily: "'JetBrains Mono', monospace",
+                                        fontSize: "10px",
+                                        letterSpacing: "0.1em",
+                                        fontWeight: 600,
+                                        background: "rgba(173, 198, 255, 0.2)",
+                                        color: "#adc6ff",
+                                    }}
+                                >
+                                    RECOMMENDED
+                                </span>
                             </div>
-                            <div>
-                                <p className="text-white text-sm font-semibold mb-0.5">
-                                    Sarah just launched{" "}
-                                    <span className="text-[#00e5ff]">&ldquo;NeuralFlow AI&rdquo;</span>
+
+                            <div className="mt-12">
+                                <h4
+                                    className="mb-3"
+                                    style={{
+                                        fontFamily: "'Space Grotesk', sans-serif",
+                                        fontSize: "32px",
+                                        fontWeight: 600,
+                                        lineHeight: 1.2,
+                                        color: "#dae2fd",
+                                    }}
+                                >
+                                    Create Your First Project
+                                </h4>
+                                <p style={{ color: "#c2c6d6", maxWidth: 448, fontSize: "16px", lineHeight: 1.5 }}>
+                                    Launch your own vision and recruit the best talent on DevMatch.
+                                    Set your stack, define your goals, and start building.
                                 </p>
-                                <p className="text-white/30 text-xs font-mono">
-                                    Looking for: Rust Developers, UX Designers
+                            </div>
+
+                            <Link href="/dashboard/projects/create">
+                                <div
+                                    className="mt-8 flex items-center gap-2 font-bold group-hover:gap-4 transition-all"
+                                    style={{ color: "#adc6ff" }}
+                                >
+                                    <span>Get Started</span>
+                                    <ArrowRight size={18} />
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* ── Explore Missions card ── */}
+                    <div className="col-span-4 group">
+                        <div className="glass-card neon-glow-tertiary h-full p-8 rounded-xl flex flex-col justify-between transition-all duration-500 cursor-pointer">
+                            <div
+                                className="p-4 rounded-xl w-fit"
+                                style={{
+                                    background: "rgba(76, 215, 246, 0.1)",
+                                    border: "1px solid rgba(76, 215, 246, 0.2)",
+                                }}
+                            >
+                                <Compass size={28} style={{ color: "#4cd7f6" }} />
+                            </div>
+
+                            <div>
+                                <h4
+                                    className="mb-2"
+                                    style={{
+                                        fontFamily: "'Space Grotesk', sans-serif",
+                                        fontSize: "20px",
+                                        fontWeight: 500,
+                                        color: "#dae2fd",
+                                    }}
+                                >
+                                    Explore Active Missions
+                                </h4>
+                                <p style={{ color: "#c2c6d6", fontSize: "14px", lineHeight: 1.5 }}>
+                                    Find projects that match your tech stack and join existing teams.
+                                </p>
+                            </div>
+
+                            <Link href="/projects">
+                                <div
+                                    className="mt-6 flex items-center gap-2 font-bold group-hover:gap-4 transition-all"
+                                    style={{ color: "#4cd7f6" }}
+                                >
+                                    <span
+                                        style={{
+                                            fontFamily: "'JetBrains Mono', monospace",
+                                            fontSize: "12px",
+                                            letterSpacing: "0.1em",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Find Projects
+                                    </span>
+                                    <ExternalLink size={14} />
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* ── Complete Profile card ── */}
+                    <div className="col-span-4 group">
+                        <div className="glass-card neon-glow-primary h-full p-8 rounded-xl flex flex-col justify-between transition-all duration-500 cursor-pointer">
+                            <div
+                                className="p-4 rounded-xl w-fit"
+                                style={{
+                                    background: "rgba(208, 188, 255, 0.1)",
+                                    border: "1px solid rgba(208, 188, 255, 0.2)",
+                                }}
+                            >
+                                <BadgeCheck size={28} style={{ color: "#d0bcff" }} />
+                            </div>
+
+                            <div>
+                                <h4
+                                    className="mb-2"
+                                    style={{
+                                        fontFamily: "'Space Grotesk', sans-serif",
+                                        fontSize: "20px",
+                                        fontWeight: 500,
+                                        color: "#dae2fd",
+                                    }}
+                                >
+                                    Complete Your Profile
+                                </h4>
+                                <p style={{ color: "#c2c6d6", fontSize: "14px", lineHeight: 1.5 }}>
+                                    Showcase your skills and experience to get recruited for top missions.
+                                </p>
+                            </div>
+
+                            <Link href="/dashboard/profile">
+                                <div
+                                    className="mt-6 flex items-center gap-2 font-bold group-hover:gap-4 transition-all"
+                                    style={{ color: "#d0bcff" }}
+                                >
+                                    <span
+                                        style={{
+                                            fontFamily: "'JetBrains Mono', monospace",
+                                            fontSize: "12px",
+                                            letterSpacing: "0.1em",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        Update Skills
+                                    </span>
+                                    <Edit size={14} />
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* ── Collaboration quote card ── */}
+                    <div className="col-span-8">
+                        <div
+                            className="glass-card h-full p-8 rounded-xl flex items-center gap-8"
+                            style={{
+                                borderStyle: "dashed",
+                                borderWidth: "2px",
+                                borderColor: "rgba(66, 71, 84, 0.3)",
+                            }}
+                        >
+                            <div className="flex-1">
+                                <h4
+                                    className="mb-2"
+                                    style={{
+                                        fontFamily: "'Space Grotesk', sans-serif",
+                                        fontSize: "20px",
+                                        fontWeight: 500,
+                                        color: "#c2c6d6",
+                                    }}
+                                >
+                                    Collaboration is the Core
+                                </h4>
+                                <p className="italic" style={{ color: "rgba(194, 198, 214, 0.7)", fontSize: "14px" }}>
+                                    "The best software isn't built alone. It's forged in the fires of
+                                    collective intelligence and diverse perspective."
                                 </p>
                             </div>
                         </div>
-                        <button className="w-full text-xs font-mono text-white/40 border border-white/10 rounded-xl py-2.5 hover:border-[#00e5ff]/30 hover:text-[#00e5ff] transition-colors">
-                            View Mission Details
-                        </button>
-                    </motion.div>
-                </div>
-            </div>
+                    </div>
 
-            {/* Footer */}
-            <div className="border-t border-white/5 pt-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <div className="md:col-span-1">
-                        <p className="text-white font-heading font-bold text-lg mb-1">DevMatch</p>
-                        <p className="text-white/25 text-xs font-mono leading-relaxed">
-                            © 2024 DevMatch.<br />Engineering the Future.
+                </div>
+            </section>
+
+            {/* ── Quick Tips + Community ── */}
+            <section className="px-12 mb-20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+                    {/* Tips */}
+                    <div>
+                        <h3
+                            className="mb-6 uppercase"
+                            style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: "12px",
+                                letterSpacing: "0.2em",
+                                fontWeight: 600,
+                                color: "#d0bcff",
+                            }}
+                        >
+                            Quick Tips
+                        </h3>
+                        <div className="space-y-4">
+                            {[
+                                {
+                                    icon: <Lightbulb size={20} style={{ color: "#adc6ff" }} />,
+                                    iconBg: "rgba(173, 198, 255, 0.05)",
+                                    title: "Optimize your tech stack",
+                                    body: "Tags help the algorithm match you with relevant projects.",
+                                },
+                                {
+                                    icon: <Users size={20} style={{ color: "#4cd7f6" }} />,
+                                    iconBg: "rgba(76, 215, 246, 0.05)",
+                                    title: "Engage in Community",
+                                    body: "Join the #general channel to introduce yourself to other devs.",
+                                },
+                            ].map(({ icon, iconBg, title, body }) => (
+                                <div
+                                    key={title}
+                                    className="flex items-start gap-4 p-4 rounded-lg"
+                                    style={{
+                                        background: "rgba(19, 27, 46, 0.4)",
+                                        border: "1px solid rgba(66, 71, 84, 0.1)",
+                                    }}
+                                >
+                                    <span className="p-2 rounded-full shrink-0" style={{ background: iconBg }}>
+                                        {icon}
+                                    </span>
+                                    <div>
+                                        <p className="font-bold" style={{ color: "#dae2fd" }}>{title}</p>
+                                        <p style={{ color: "#c2c6d6", fontSize: "14px" }}>{body}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Community Highlights */}
+                    <div>
+                        <h3
+                            className="mb-6 uppercase"
+                            style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: "12px",
+                                letterSpacing: "0.2em",
+                                fontWeight: 600,
+                                color: "#adc6ff",
+                            }}
+                        >
+                            Community Highlights
+                        </h3>
+                        <div className="glass-card rounded-xl p-6 relative overflow-hidden">
+                            <div
+                                className="absolute -top-10 -right-10 w-32 h-32 pointer-events-none rounded-full"
+                                style={{ background: "rgba(173, 198, 255, 0.2)", filter: "blur(48px)" }}
+                            />
+                            <div className="flex items-center gap-4 mb-4">
+                                <div
+                                    className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center font-bold text-sm"
+                                    style={{
+                                        border: "1px solid rgba(173, 198, 255, 0.3)",
+                                        background: "rgba(173, 198, 255, 0.2)",
+                                        color: "#adc6ff",
+                                    }}
+                                >
+                                    S
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold" style={{ color: "#dae2fd" }}>
+                                        Sarah just launched{" "}
+                                        <span style={{ color: "#adc6ff" }}>"NeuralFlow AI"</span>
+                                    </p>
+                                    <p style={{ fontSize: "11px", color: "#c2c6d6" }}>
+                                        Looking for: Rust Developers, UX Designers
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                className="text-xs font-semibold px-4 py-2 rounded transition-colors"
+                                style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    color: "#adc6ff",
+                                    border: "1px solid rgba(173, 198, 255, 0.3)",
+                                    background: "transparent",
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(173, 198, 255, 0.1)")}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                            >
+                                View Mission Details
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            {/* ── Footer ── */}
+            <footer
+                className="mt-auto py-12"
+                style={{
+                    borderTop: "1px solid rgba(66, 71, 84, 0.2)",
+                    background: "#060e20",
+                }}
+            >
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <h2
+                            className="mb-2"
+                            style={{
+                                fontFamily: "'Space Grotesk', sans-serif",
+                                fontSize: "32px",
+                                fontWeight: 600,
+                                color: "#adc6ff",
+                            }}
+                        >
+                            DevMatch
+                        </h2>
+                        <p style={{ fontSize: "14px", color: "#c2c6d6" }}>
+                            © 2024 DevMatch. Engineering the Future.
                         </p>
                     </div>
-                    <div>
-                        <p className="text-white/25 text-[10px] font-mono uppercase tracking-widest mb-3">Product</p>
-                        <div className="space-y-2">
-                            {["About", "Docs"].map(t => (
-                                <p key={t} className="text-white/50 text-sm hover:text-white cursor-pointer transition-colors">{t}</p>
+                    {[
+                        { title: "Product", links: ["About", "Docs"] },
+                        { title: "Legal", links: ["Privacy", "Terms"] },
+                    ].map(({ title, links }) => (
+                        <div key={title} className="flex flex-col gap-2">
+                            <h4
+                                className="font-bold mb-2 uppercase"
+                                style={{
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontSize: "12px",
+                                    letterSpacing: "0.1em",
+                                    color: "#dae2fd",
+                                }}
+                            >
+                                {title}
+                            </h4>
+                            {links.map((l) => (
+                                <a
+                                    key={l}
+                                    href="#"
+                                    className="transition-colors"
+                                    style={{ fontSize: "14px", color: "#c2c6d6" }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.color = "#d0bcff")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.color = "#c2c6d6")}
+                                >
+                                    {l}
+                                </a>
                             ))}
                         </div>
-                    </div>
-                    <div>
-                        <p className="text-white/25 text-[10px] font-mono uppercase tracking-widest mb-3">Legal</p>
-                        <div className="space-y-2">
-                            {["Privacy", "Terms"].map(t => (
-                                <p key={t} className="text-white/50 text-sm hover:text-white cursor-pointer transition-colors">{t}</p>
-                            ))}
-                        </div>
-                    </div>
-                    <div>
-                        <p className="text-white/25 text-[10px] font-mono uppercase tracking-widest mb-3">Social</p>
-                        <div className="flex items-center gap-2">
-                            {[Mail, GitBranch, Globe].map((Icon, i) => (
-                                <div key={i} className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-[#00e5ff] hover:border-[#00e5ff]/20 cursor-pointer transition-colors">
-                                    <Icon size={14} />
-                                </div>
-                            ))}
+                    ))}
+                    <div className="flex flex-col gap-2">
+                        <h4
+                            className="font-bold mb-2 uppercase"
+                            style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: "12px",
+                                letterSpacing: "0.1em",
+                                color: "#dae2fd",
+                            }}
+                        >
+                            Social
+                        </h4>
+                        <div className="flex gap-4" style={{ color: "#c2c6d6", fontSize: "14px" }}>
+                            <span className="cursor-pointer hover:text-[#adc6ff] transition-colors">GH</span>
+                            <span className="cursor-pointer hover:text-[#adc6ff] transition-colors">LI</span>
+                            <span className="cursor-pointer hover:text-[#adc6ff] transition-colors">X</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    );
-}
+            </footer>
 
-// ── Main dashboard ─────────────────────────────────────────────────────────
-export default function DashboardOverview() {
-    const { user } = useAuth();
-    const mounted = useHasMounted();
-
-    const firstName = mounted ? (user?.name?.split(" ")[0] ?? "there") : "there";
-    const fullName = mounted ? (user?.name ?? "Developer") : "Developer";
-    const avatar = mounted ? (user?.name ?? "D").charAt(0) : "D";
-
-    // Fetch real data
-    const { data: myProjects = [] } = useQuery({
-        queryKey: ["my-projects"],
-        queryFn: () => axiosInstance.get("/projects?mine=true").then(r => r.data.projects ?? []),
-        enabled: !!user?.id,
-    });
-
-    const { data: myApplications = [] } = useQuery({
-        queryKey: ["my-applications"],
-        queryFn: () => axiosInstance.get("/applications").then(r => r.data),
-        enabled: !!user?.id,
-    });
-
-    const { data: profile } = useQuery({
-        queryKey: ["profile", user?.id],
-        queryFn: () => axiosInstance.get(`/users/${user.id}`).then(r => r.data),
-        enabled: !!user?.id,
-    });
-
-    // Compute real stats
-    const totalApplicants = myProjects.reduce((sum, p) => sum + (p.application_count ?? 0), 0);
-    const acceptedApps = myApplications.filter(a => a.status === "accepted").length;
-    const hasAnyData = myProjects.length > 0 || myApplications.length > 0 || profile?.skills?.length > 0;
-
-    const stats = [
-        { label: "Projects Created", value: String(myProjects.length), badge: myProjects.length > 0 ? "active" : "start now", icon: FolderOpen },
-        { label: "Applications Received", value: String(totalApplicants), badge: totalApplicants > 0 ? `${totalApplicants} total` : "none yet", icon: Users },
-        { label: "Accepted", value: String(acceptedApps), badge: acceptedApps > 0 ? "congrats!" : "pending", icon: CheckCircle },
-        { label: "Profile Views", value: "—", badge: "coming soon", icon: Eye },
-    ];
-
-    // Build activity from real data
-    const activity = [
-        ...myApplications.slice(0, 2).map(a => ({
-            type: a.status === "accepted" ? "approved" : "join",
-            text: `Your application for ${a.projectTitle ?? "a project"} is ${a.status}.`,
-            time: new Date(a.createdAt).toLocaleDateString(),
-        })),
-        ...myProjects.slice(0, 2).map(p => ({
-            type: "pr",
-            text: `You created "${p.title}"`,
-            time: new Date(p.createdAt).toLocaleDateString(),
-        })),
-    ].slice(0, 4);
-
-    return (
-        <div className="max-w-6xl mx-auto pt-12 md:pt-2 pb-10">
-            {!hasAnyData ? (
-                // ── Empty / onboarding state — self-contained ──────────────
-                <EmptyDashboard firstName={firstName} />
-            ) : (
-                // ── Populated state — header + real data ───────────────────
-                <>
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                            <h1 className="text-4xl font-bold text-white font-mono leading-tight">
-                                Welcome back, <span suppressHydrationWarning>{firstName}</span>.
-                            </h1>
-                            <p className="text-white/40 text-sm font-mono mt-1.5">
-                                Your ecosystem is looking healthy.
-                            </p>
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                            className="flex items-center gap-3 bg-[#0d1421] border border-white/5 rounded-xl px-4 py-2.5 self-start shrink-0"
-                        >
-                            <div className="text-right">
-                                <p className="text-white text-sm font-mono font-semibold" suppressHydrationWarning>{fullName}</p>
-                                <p className="text-[#00e5ff] text-xs font-mono">
-                                    {profile?.skills?.[0]
-                                        ? `${profile.skills[0].level} ${profile.skills[0].name} Dev`
-                                        : "Developer"}
-                                </p>
-                            </div>
-                            <div className="relative">
-                                {mounted && user?.image ? (
-                                    <Image src={user.image} alt={fullName} width={40} height={40}
-                                        className="w-10 h-10 rounded-full object-cover" referrerPolicy="no-referrer" />
-                                ) : (
-                                    <div
-                                        className="w-10 h-10 rounded-full flex items-center justify-center text-[#0a0f1a] font-bold text-sm font-mono"
-                                        style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)" }}
-                                        suppressHydrationWarning
-                                    >{avatar}</div>
-                                )}
-                                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-[#0a0f1a]" />
-                            </div>
-                        </motion.div>
-                    </div>
-
-                    {/* ── Stats, Chart, Activity, Tech Stack — unchanged ── */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
-                        {stats.map((s, i) => <StatsCard key={s.label} {...s} delay={i * 0.08} />)}
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mb-5">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-                            className="bg-[#0d1421] border border-white/5 rounded-2xl p-5"
-                        >
-                            <div className="flex items-start justify-between mb-5">
-                                <div>
-                                    <h3 className="text-white font-mono font-semibold text-sm">Application Trends</h3>
-                                    <p className="text-white/30 text-xs font-mono mt-0.5">Tracking growth across your tech stack</p>
-                                </div>
-                                <div className="flex gap-1">
-                                    <button className="px-3 py-1 rounded-md text-xs font-mono bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/20">Weekly</button>
-                                    <button className="px-3 py-1 rounded-md text-xs font-mono text-white/30 hover:text-white/60 transition-colors">Monthly</button>
-                                </div>
-                            </div>
-                            <div className="h-52">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={chartData} barCategoryGap="28%" margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                                        <XAxis dataKey="day" axisLine={false} tickLine={false}
-                                            tick={{ fill: "rgba(255,255,255,0.25)", fontSize: 11, fontFamily: "monospace" }} />
-                                        <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
-                                        <Bar dataKey="apps" radius={[4, 4, 0, 0]} activeBar={{ fill: "#00e5ff" }}>
-                                            {chartData.map((_, i) => (
-                                                <Cell key={i} fill={i === chartData.length - 1 ? "#1e4a5c" : "#1a2e3e"} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </motion.div>
-
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="h-full">
-                            <ActivityFeed items={activity.length > 0 ? activity : [{ type: "pr", text: "No recent activity yet.", time: "just now" }]} />
-                        </motion.div>
-                    </div>
-
-                    {profile?.skills?.length > 0 ? (
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
-                            className="bg-[#0d1421] border border-white/5 rounded-2xl p-5">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-white font-mono font-semibold text-sm">Your Tech Stack Reputation</h3>
-                                <Link href="/dashboard/profile">
-                                    <span className="text-white/30 text-xs font-mono hover:text-[#00e5ff] transition-colors">Edit →</span>
-                                </Link>
-                            </div>
-                            <div className="flex flex-wrap gap-3">
-                                {profile.skills.map(({ name, level }) => (
-                                    <div key={name} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-white/20 transition-colors">
-                                        <span className="w-2 h-2 rounded-full shrink-0 bg-[#00e5ff]" />
-                                        <span className="text-white/90 text-xs font-mono font-medium">{name}</span>
-                                        <span className="text-white/35 text-xs font-mono">{level}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}
-                            className="bg-[#0d1421] border border-white/5 border-dashed rounded-2xl p-6 text-center">
-                            <p className="text-white/30 font-mono text-sm mb-3">You haven&apos;t added any skills yet.</p>
-                            <Link href="/dashboard/profile">
-                                <span className="text-[#00e5ff] font-mono text-xs hover:underline">Add skills to your profile →</span>
-                            </Link>
-                        </motion.div>
-                    )}
-                </>
-            )}
         </div>
     );
 }
