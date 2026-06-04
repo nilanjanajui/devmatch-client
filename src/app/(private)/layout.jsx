@@ -1,7 +1,9 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/dashboard/Sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 
 function hasAuthCookie() {
@@ -28,13 +30,32 @@ export default function PrivateLayout({ children }) {
             </div>
         );
     }
-    
+
     return (
-        <div className="flex min-h-screen bg-[#0a0f1a]">
-            <Sidebar />
-            <main className="flex-1 ml-0 md:ml-50 p-4 md:p-8 overflow-y-auto">
-                {children}
-            </main>
-        </div>
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset className="bg-[#0a0f1a]">
+                {/* Top bar */}
+                <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2
+                    bg-[#0a0f1a] border-b border-white/5 px-4
+                    transition-[width,height] ease-linear
+                    group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                    <SidebarTrigger
+                        className="-ml-1 text-white/40 hover:text-white
+                            hover:bg-white/5 rounded-lg transition-colors"
+                    />
+                    <Separator
+                        orientation="vertical"
+                        className="mr-2 bg-white/10 data-[orientation=vertical]:h-4"
+                    />
+                    <p className="text-white/30 text-xs font-mono tracking-wide">Dev Console</p>
+                </header>
+
+                {/* Page content */}
+                <main className="flex flex-1 flex-col p-6 md:p-8 min-h-[calc(100vh-3.5rem)]">
+                    {children}
+                </main>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }

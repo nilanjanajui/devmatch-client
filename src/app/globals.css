@@ -11,6 +11,19 @@
   --font-heading: 'Space Grotesk', sans-serif;
 }
 
+:root {
+  --sidebar-width: 220px;
+  --sidebar-width-icon: 3.5rem;
+  --sidebar: #0d1421;
+  --sidebar-foreground: rgba(255, 255, 255, 0.75);
+  --sidebar-primary: #00e5ff;
+  --sidebar-primary-foreground: #0a0f1a;
+  --sidebar-accent: rgba(0, 229, 255, 0.08);
+  --sidebar-accent-foreground: #00e5ff;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-ring: rgba(0, 229, 255, 0.3);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
