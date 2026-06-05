@@ -75,7 +75,7 @@ export function AppSidebar({ ...props }) {
                         <p className="text-white text-sm font-semibold font-mono truncate leading-tight">
                             {user?.name ?? "Developer"}
                         </p>
-                        <span className="text-[#06B6D4] text-[10px] font-mono uppercase tracking-widest">
+                        <span className="text-cyan text-[10px] font-mono uppercase tracking-widest">
                             Pro Account
                         </span>
                     </div>
@@ -97,7 +97,7 @@ export function AppSidebar({ ...props }) {
                                     tooltip={label}
                                     className={`font-mono text-sm rounded-lg transition-colors
                                         ${active
-                                            ? "bg-[#00e5ff]/10 !text-[#00e5ff] border-l-2 border-[#00e5ff] pl-[10px]"
+                                            ? "bg-[#00e5ff]/10 text-[#00e5ff]! border-l-2 border-[#00e5ff] pl-2.5"
                                             : "text-white/50 hover:text-white/80 hover:bg-white/5"
                                         }`}
                                 >
@@ -119,7 +119,7 @@ export function AppSidebar({ ...props }) {
                         <SidebarMenuButton
                             asChild
                             tooltip="New Project"
-                            className="bg-[#00e5ff] !text-[#0a0f1a] font-bold font-mono
+                            className="bg-[#00e5ff] text-[#0a0f1a]! font-bold font-mono
                                 hover:bg-[#00e5ff]/90 justify-center rounded-xl transition-colors"
                         >
                             <Link href="/dashboard/projects/new">
