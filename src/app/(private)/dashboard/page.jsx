@@ -117,52 +117,135 @@ export default function DashboardOverview() {
 
                     {/* ── Large CREATE card (8 cols) ── */}
                     <div style={{ gridColumn: "span 8", minHeight: "360px" }}>
+                        <style>{`
+        @keyframes dmShineA {
+            0% { transform: translateX(-220%) skewX(-15deg); }
+            55%, 100% { transform: translateX(420%) skewX(-15deg); }
+        }
+        @keyframes dmShineB {
+            0%, 22% { transform: translateX(-220%) skewX(-15deg); }
+            78%, 100% { transform: translateX(420%) skewX(-15deg); }
+        }
+        @keyframes dmAurora1 {
+            0%, 100% { transform: translate(0%, 0%) scale(1); }
+            35%  { transform: translate(6%, -6%) scale(1.12); }
+            70%  { transform: translate(-4%, 5%) scale(0.94); }
+        }
+        @keyframes dmAurora2 {
+            0%, 100% { transform: translate(0%, 0%) scale(1); }
+            40%  { transform: translate(-7%, 4%) scale(1.1); }
+            75%  { transform: translate(5%, -5%) scale(0.9); }
+        }
+        @keyframes dmBorderGlow {
+            0%, 100% { border-color: rgba(173,198,255,0.12); box-shadow: 0 0 12px rgba(173,198,255,0.06); }
+            50%       { border-color: rgba(173,198,255,0.38); box-shadow: 0 0 32px rgba(173,198,255,0.18), 0 0 64px rgba(173,198,255,0.06); }
+        }
+        @keyframes dmIconPulse {
+            0%, 100% { box-shadow: 0 0 0px 0px rgba(173,198,255,0); }
+            50%       { box-shadow: 0 0 22px 4px rgba(173,198,255,0.32); }
+        }
+        @keyframes dmBadgePulse {
+            0%, 100% { background: rgba(173,198,255,0.15); box-shadow: 0 0 6px rgba(173,198,255,0.15); }
+            50%       { background: rgba(173,198,255,0.30); box-shadow: 0 0 14px rgba(173,198,255,0.45); }
+        }
+        @keyframes dmSparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            20%       { opacity: 1; transform: scale(1) rotate(15deg); }
+            80%       { opacity: 0.6; transform: scale(0.8) rotate(-10deg); }
+        }
+        @keyframes dmArrow {
+            0%, 100% { transform: translateX(0px); }
+            50%       { transform: translateX(5px); }
+        }
+        .dm-feat-card {
+            animation: dmBorderGlow 4.5s ease-in-out infinite;
+        }
+        .dm-feat-card:hover {
+            animation: none !important;
+            border-color: rgba(173,198,255,0.6) !important;
+            box-shadow: 0 0 44px rgba(173,198,255,0.32), 0 0 90px rgba(173,198,255,0.1) !important;
+        }
+        .dm-cta-link:hover .dm-arrow-icon {
+            animation: dmArrow 0.65s ease-in-out infinite;
+        }
+        .dm-cta-link:hover {
+            opacity: 0.8;
+        }
+    `}</style>
+
                         <div
+                            className="dm-feat-card"
                             style={{
                                 ...CARD.base,
                                 border: "1px solid rgba(173,198,255,0.12)",
                                 overflow: "hidden",
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.boxShadow = "0 0 28px rgba(173,198,255,0.2)";
-                                e.currentTarget.style.borderColor = "rgba(173,198,255,0.4)";
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.boxShadow = "none";
-                                e.currentTarget.style.borderColor = "rgba(173,198,255,0.12)";
+                                position: "relative",
                             }}
                         >
-                            <style>{`
-            @keyframes devmatchShine {
-                0%   { transform: translateX(-150%) skewX(-20deg); }
-                60%, 100% { transform: translateX(350%) skewX(-20deg); }
-            }
-        `}</style>
-
-                            {/* shimmer overlay */}
-                            <div style={{
-                                position: "absolute", inset: 0,
-                                overflow: "hidden",
-                                borderRadius: "inherit",
-                                pointerEvents: "none",
-                            }}>
+                            {/* Aurora blobs */}
+                            <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", borderRadius: "inherit" }}>
                                 <div style={{
                                     position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    width: "40%",
-                                    height: "100%",
-                                    background: "linear-gradient(90deg, transparent 0%, rgba(173,198,255,0.10) 50%, transparent 100%)",
-                                    animation: "devmatchShine 3s ease-in-out infinite",
+                                    width: "75%", height: "75%",
+                                    top: "-25%", left: "-8%",
+                                    background: "radial-gradient(ellipse, rgba(173,198,255,0.09) 0%, transparent 68%)",
+                                    animation: "dmAurora1 10s ease-in-out infinite",
+                                }} />
+                                <div style={{
+                                    position: "absolute",
+                                    width: "55%", height: "55%",
+                                    bottom: "-15%", right: "0%",
+                                    background: "radial-gradient(ellipse, rgba(100,130,255,0.08) 0%, transparent 68%)",
+                                    animation: "dmAurora2 13s ease-in-out infinite",
                                 }} />
                             </div>
 
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                            {/* Shine streaks */}
+                            <div style={{ position: "absolute", inset: 0, overflow: "hidden", borderRadius: "inherit", pointerEvents: "none" }}>
+                                {/* Wide soft streak */}
+                                <div style={{
+                                    position: "absolute", top: 0, left: 0,
+                                    width: "42%", height: "100%",
+                                    background: "linear-gradient(90deg, transparent 0%, rgba(173,198,255,0.09) 50%, transparent 100%)",
+                                    animation: "dmShineA 5s ease-in-out infinite",
+                                }} />
+                                {/* Narrow bright streak, slightly delayed */}
+                                <div style={{
+                                    position: "absolute", top: 0, left: 0,
+                                    width: "16%", height: "100%",
+                                    background: "linear-gradient(90deg, transparent 0%, rgba(220,235,255,0.24) 50%, transparent 100%)",
+                                    animation: "dmShineB 5s ease-in-out infinite",
+                                }} />
+                            </div>
+
+                            {/* Sparkle dots */}
+                            {[
+                                { top: "12%", right: "14%", delay: "0s", size: 4 },
+                                { top: "22%", right: "26%", delay: "1.2s", size: 3 },
+                                { top: "8%", right: "9%", delay: "2.3s", size: 3 },
+                                { top: "38%", right: "7%", delay: "0.7s", size: 4 },
+                                { top: "18%", right: "38%", delay: "1.8s", size: 2 },
+                            ].map((dot, i) => (
+                                <div key={i} style={{
+                                    position: "absolute",
+                                    top: dot.top, right: dot.right,
+                                    width: `${dot.size}px`, height: `${dot.size}px`,
+                                    borderRadius: "50%",
+                                    background: "rgba(200,220,255,0.85)",
+                                    animation: `dmSparkle 4s ease-in-out ${dot.delay} infinite`,
+                                    pointerEvents: "none",
+                                    zIndex: 1,
+                                }} />
+                            ))}
+
+                            {/* Header row */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", position: "relative", zIndex: 2 }}>
                                 <div style={{
                                     padding: "16px",
                                     borderRadius: "12px",
                                     background: "rgba(173,198,255,0.1)",
                                     border: "1px solid rgba(173,198,255,0.2)",
+                                    animation: "dmIconPulse 3.5s ease-in-out infinite",
                                 }}>
                                     <FolderPlus size={36} color="#adc6ff" />
                                 </div>
@@ -173,14 +256,15 @@ export default function DashboardOverview() {
                                     letterSpacing: "0.1em",
                                     padding: "4px 12px",
                                     borderRadius: "9999px",
-                                    background: "rgba(173,198,255,0.2)",
                                     color: "#adc6ff",
+                                    animation: "dmBadgePulse 3.5s ease-in-out infinite",
                                 }}>
                                     RECOMMENDED
                                 </span>
                             </div>
 
-                            <div style={{ marginTop: "48px" }}>
+                            {/* Body */}
+                            <div style={{ marginTop: "48px", position: "relative", zIndex: 2 }}>
                                 <h4 style={{
                                     fontFamily: "'Space Grotesk', sans-serif",
                                     fontSize: "32px",
@@ -198,18 +282,23 @@ export default function DashboardOverview() {
                                 </p>
                             </div>
 
-                            <Link href="/dashboard/projects/create" style={{ textDecoration: "none" }}>
+                            {/* CTA */}
+                            <Link href="/dashboard/projects/create" className="dm-cta-link" style={{ textDecoration: "none", position: "relative", zIndex: 2 }}>
                                 <div style={{
                                     marginTop: "32px",
-                                    display: "flex",
+                                    display: "inline-flex",
                                     alignItems: "center",
                                     gap: "8px",
                                     color: "#adc6ff",
                                     fontWeight: 700,
                                     fontSize: "15px",
+                                    cursor: "pointer",
+                                    transition: "opacity 0.2s ease",
                                 }}>
                                     <span>Get Started</span>
-                                    <ArrowRight size={18} />
+                                    <span className="dm-arrow-icon" style={{ display: "flex" }}>
+                                        <ArrowRight size={18} />
+                                    </span>
                                 </div>
                             </Link>
                         </div>
