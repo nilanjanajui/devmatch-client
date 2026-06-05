@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     LayoutDashboard, FolderKanban, MessageSquare,
-    BarChart2, Settings, Plus,
+    BarChart2, Settings, Plus, Home,
 } from "lucide-react";
 
 const navItems = [
@@ -34,27 +34,44 @@ export default function Sidebar() {
             borderRight: "1px solid rgba(255,255,255,0.05)",
         }}>
 
-            {/* Brand — "Dev Console / Pro Account" */}
+            {/* Brand — clickable home button */}
             <div style={{ padding: "0 20px", marginBottom: "36px" }}>
-                <h1 style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "17px",
-                    fontWeight: 700,
-                    color: "#4cd7f6",
-                    margin: 0,
-                    letterSpacing: "-0.01em",
-                }}>
-                    Dev Console
-                </h1>
-                <p style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: "12px",
-                    color: "rgba(255,255,255,0.45)",
-                    marginTop: "3px",
-                    marginBottom: 0,
-                }}>
-                    Pro Account
-                </p>
+                <Link
+                    href="/"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        textDecoration: "none",
+                        borderRadius: "6px",
+                        padding: "6px 8px",
+                        margin: "-6px -8px",
+                        transition: "background 0.2s ease",
+                    }}
+                    onMouseEnter={e => {
+                        e.currentTarget.style.background = "rgba(76,215,246,0.08)";
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.background = "transparent";
+                    }}
+                >
+                    <Home
+                        size={16}
+                        color="#4cd7f6"
+                        strokeWidth={2}
+                        style={{ flexShrink: 0 }}
+                    />
+                    <h1 style={{
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: "17px",
+                        fontWeight: 700,
+                        color: "#4cd7f6",
+                        margin: 0,
+                        letterSpacing: "-0.01em",
+                    }}>
+                        Dev Console
+                    </h1>
+                </Link>
             </div>
 
             {/* Nav Items */}
