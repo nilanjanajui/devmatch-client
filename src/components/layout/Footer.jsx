@@ -1,12 +1,4 @@
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Youtube } from "lucide-react";
-
-const socialLinks = [
-    { icon: Github,   href: "#", label: "GitHub"   },
-    { icon: Twitter,  href: "#", label: "Twitter"  },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Youtube,  href: "#", label: "YouTube"  },
-];
 
 export default function Footer() {
     return (
@@ -27,45 +19,9 @@ export default function Footer() {
                                 DevMatch
                             </span>
                         </div>
-                        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, maxWidth: 220, marginBottom: 24 }}>
+                        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", lineHeight: 1.7, maxWidth: 220 }}>
                             Engineering the future of developer collaboration. Find your team, ship your vision.
                         </p>
-
-                        {/* Social Icons */}
-                        <div style={{ display: "flex", gap: 8 }}>
-                            {socialLinks.map(({ icon: Icon, href, label }) => (
-                                <Link
-                                    key={label}
-                                    href={href}
-                                    aria-label={label}
-                                    style={{
-                                        width: 34,
-                                        height: 34,
-                                        borderRadius: "8px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        background: "rgba(255,255,255,0.06)",
-                                        border: "1px solid rgba(255,255,255,0.08)",
-                                        color: "rgba(255,255,255,0.5)",
-                                        textDecoration: "none",
-                                        transition: "all 0.2s ease",
-                                    }}
-                                    onMouseEnter={e => {
-                                        e.currentTarget.style.background = "rgba(99,102,241,0.2)";
-                                        e.currentTarget.style.borderColor = "rgba(99,102,241,0.5)";
-                                        e.currentTarget.style.color = "#fff";
-                                    }}
-                                    onMouseLeave={e => {
-                                        e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-                                        e.currentTarget.style.color = "rgba(255,255,255,0.5)";
-                                    }}
-                                >
-                                    <Icon size={15} strokeWidth={1.75} />
-                                </Link>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Platform */}
@@ -77,11 +33,7 @@ export default function Footer() {
                             <Link key={item} href="#" style={{
                                 display: "block", fontSize: 14, color: "rgba(255,255,255,0.6)",
                                 textDecoration: "none", marginBottom: 12,
-                                transition: "color 0.2s ease",
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-                            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}
-                            >{item}</Link>
+                            }}>{item}</Link>
                         ))}
                     </div>
 
@@ -94,11 +46,7 @@ export default function Footer() {
                             <Link key={item} href="#" style={{
                                 display: "block", fontSize: 14, color: "rgba(255,255,255,0.6)",
                                 textDecoration: "none", marginBottom: 12,
-                                transition: "color 0.2s ease",
-                            }}
-                            onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-                            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.6)"}
-                            >{item}</Link>
+                            }}>{item}</Link>
                         ))}
                     </div>
 
@@ -133,39 +81,11 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div style={{
-                    borderTop: "1px solid rgba(255,255,255,0.06)",
-                    paddingTop: 24,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: 12,
-                }}>
-                    <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", margin: 0 }}>
+                {/* Copyright */}
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24, textAlign: "center" }}>
+                    <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>
                         © 2024 DevMatch: Engineering the Future.
                     </p>
-
-                    {/* Repeat social icons in bottom bar (smaller) */}
-                    <div style={{ display: "flex", gap: 16 }}>
-                        {socialLinks.map(({ icon: Icon, href, label }) => (
-                            <Link
-                                key={label}
-                                href={href}
-                                aria-label={label}
-                                style={{
-                                    color: "rgba(255,255,255,0.25)",
-                                    textDecoration: "none",
-                                    transition: "color 0.2s ease",
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}
-                                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.25)"}
-                            >
-                                <Icon size={14} strokeWidth={1.75} />
-                            </Link>
-                        ))}
-                    </div>
                 </div>
             </div>
         </footer>
