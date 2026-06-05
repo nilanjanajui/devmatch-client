@@ -86,7 +86,7 @@ export default function DashboardOverview() {
                         maxWidth: "672px",
                         margin: 0,
                     }}>
-                        Your journey as a developer collaborator starts here. Let's build
+                        Your journey as a developer collaborator starts here. Let&apos;s build
                         something incredible. Connect with elite engineers, join
                         cutting-edge missions, and manifest your code into reality.
                     </p>
@@ -463,8 +463,8 @@ export default function DashboardOverview() {
                                     fontStyle: "italic",
                                     margin: 0,
                                 }}>
-                                    "The best software isn't built alone. It's forged in the fires of
-                                    collective intelligence and diverse perspective."
+                                    &quot;The best software isn&apos;t built alone. It&apos;s forged in the fires of
+                                    collective intelligence and diverse perspective.&quot;
                                 </p>
                             </div>
                         </div>
@@ -586,7 +586,7 @@ export default function DashboardOverview() {
                                 <div>
                                     <p style={{ fontSize: "14px", fontWeight: 700, color: "#dae2fd", margin: "0 0 2px 0" }}>
                                         Sarah just launched{" "}
-                                        <span style={{ color: "#adc6ff" }}>"NeuralFlow AI"</span>
+                                        <span style={{ color: "#adc6ff" }}>&quot;NeuralFlow AI&quot;</span>
                                     </p>
                                     <p style={{ fontSize: "11px", color: "#c2c6d6", margin: 0 }}>
                                         Looking for: Rust Developers, UX Designers
