@@ -19,99 +19,127 @@ export default function Sidebar({ user }) {
     const pathname = usePathname();
 
     return (
-        <aside
-            className="h-screen w-64 fixed left-0 top-0 z-40 flex flex-col py-6"
-            style={{
-                background: "rgba(23, 31, 51, 0.6)",
-                backdropFilter: "blur(20px)",
-                borderRight: "1px solid rgba(76, 215, 246, 0.2)",
-                boxShadow: "5px 0 15px rgba(76, 215, 246, 0.05)",
-            }}
-        >
+        <aside style={{
+            height: "100vh",
+            width: "256px",
+            position: "fixed",
+            left: 0,
+            top: 0,
+            zIndex: 40,
+            display: "flex",
+            flexDirection: "column",
+            paddingTop: "24px",
+            paddingBottom: "24px",
+            background: "rgba(23, 31, 51, 0.75)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderRight: "1px solid rgba(76, 215, 246, 0.15)",
+            boxShadow: "5px 0 15px rgba(76, 215, 246, 0.05)",
+        }}>
+
             {/* Brand */}
-            <div className="px-6 mb-10">
-                <h1
-                    className="font-bold tracking-tight"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "20px", color: "#adc6ff" }}
-                >
+            <div style={{ padding: "0 24px", marginBottom: "40px" }}>
+                <h1 style={{
+                    fontFamily: "'Space Grotesk', sans-serif",
+                    fontSize: "20px",
+                    fontWeight: 700,
+                    color: "#adc6ff",
+                    margin: 0,
+                }}>
                     DevMatch
                 </h1>
-                <p
-                    className="mt-1 uppercase"
-                    style={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: "10px",
-                        letterSpacing: "0.15em",
-                        color: "rgba(194, 198, 214, 0.6)",
-                    }}
-                >
+                <p style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: "10px",
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    color: "rgba(194,198,214,0.5)",
+                    marginTop: "4px",
+                    marginBottom: 0,
+                }}>
                     Engineering the Future
                 </p>
             </div>
 
             {/* User */}
-            <div className="px-6 mb-8 flex items-center gap-3">
-                <div
-                    className="w-10 h-10 rounded-full shrink-0 overflow-hidden flex items-center justify-center font-bold"
-                    style={{
-                        border: "1px solid rgba(76, 215, 246, 0.3)",
-                        background: "rgba(173, 198, 255, 0.15)",
-                        color: "#adc6ff",
-                    }}
-                >
-                    {user?.photoURL ? (
-                        <img src={user.photoURL} alt="avatar" className="w-full h-full object-cover" />
-                    ) : (
-                        (user?.displayName?.charAt(0) || user?.email?.charAt(0) || "D").toUpperCase()
-                    )}
+            <div style={{
+                padding: "0 24px",
+                marginBottom: "32px",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+            }}>
+                <div style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    flexShrink: 0,
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 700,
+                    fontSize: "16px",
+                    border: "1px solid rgba(76,215,246,0.3)",
+                    background: "rgba(173,198,255,0.15)",
+                    color: "#adc6ff",
+                }}>
+                    {user?.photoURL
+                        ? <img src={user.photoURL} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : (user?.displayName?.charAt(0) || user?.email?.charAt(0) || "D").toUpperCase()
+                    }
                 </div>
                 <div>
-                    <p
-                        className="font-bold"
-                        style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: "14px", color: "#dae2fd" }}
-                    >
+                    <p style={{
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#dae2fd",
+                        margin: 0,
+                    }}>
                         {user?.displayName?.split(" ")[0] || user?.email?.split("@")[0] || "Developer"}
                     </p>
-                    <p
-                        className="uppercase"
-                        style={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: "10px",
-                            letterSpacing: "0.1em",
-                            color: "#4cd7f6",
-                        }}
-                    >
+                    <p style={{
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: "10px",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "#4cd7f6",
+                        margin: 0,
+                    }}>
                         Pro Account
                     </p>
                 </div>
             </div>
 
-            {/* Nav Items */}
-            <nav className="flex-1 space-y-1">
+            {/* Nav */}
+            <nav style={{ flex: 1 }}>
                 {navItems.map(({ href, label, icon: Icon }) => {
                     const isActive =
                         pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+
                     return (
                         <Link
                             key={href}
                             href={href}
-                            className="flex items-center gap-3 px-6 py-3 transition-all duration-300"
-                            style={
-                                isActive
-                                    ? {
-                                        background: "rgba(76, 215, 246, 0.1)",
-                                        color: "#4cd7f6",
-                                        borderRight: "4px solid #4cd7f6",
-                                    }
-                                    : { color: "#c2c6d6" }
-                            }
-                            onMouseEnter={(e) => {
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "12px",
+                                padding: "12px 24px",
+                                textDecoration: "none",
+                                transition: "all 0.2s ease",
+                                borderRight: isActive ? "4px solid #4cd7f6" : "4px solid transparent",
+                                background: isActive ? "rgba(76,215,246,0.1)" : "transparent",
+                                color: isActive ? "#4cd7f6" : "#c2c6d6",
+                            }}
+                            onMouseEnter={e => {
                                 if (!isActive) {
-                                    e.currentTarget.style.background = "rgba(45, 52, 73, 0.4)";
+                                    e.currentTarget.style.background = "rgba(45,52,73,0.4)";
                                     e.currentTarget.style.color = "#dae2fd";
                                 }
                             }}
-                            onMouseLeave={(e) => {
+                            onMouseLeave={e => {
                                 if (!isActive) {
                                     e.currentTarget.style.background = "transparent";
                                     e.currentTarget.style.color = "#c2c6d6";
@@ -119,14 +147,13 @@ export default function Sidebar({ user }) {
                             }}
                         >
                             <Icon size={20} />
-                            <span
-                                className="uppercase font-semibold"
-                                style={{
-                                    fontFamily: "'JetBrains Mono', monospace",
-                                    fontSize: "12px",
-                                    letterSpacing: "0.1em",
-                                }}
-                            >
+                            <span style={{
+                                fontFamily: "'JetBrains Mono', monospace",
+                                fontSize: "12px",
+                                letterSpacing: "0.1em",
+                                fontWeight: 600,
+                                textTransform: "uppercase",
+                            }}>
                                 {label}
                             </span>
                         </Link>
@@ -134,18 +161,37 @@ export default function Sidebar({ user }) {
                 })}
             </nav>
 
-            {/* New Project Button */}
-            <div className="px-6 mt-auto">
-                <Link href="/dashboard/projects/create">
+            {/* New Project */}
+            <div style={{ padding: "0 24px", marginTop: "auto" }}>
+                <Link href="/dashboard/projects/create" style={{ textDecoration: "none" }}>
                     <button
-                        className="w-full py-3 rounded-lg font-bold flex items-center justify-center gap-2 uppercase transition-all active:scale-95"
                         style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            background: "#4cd7f6",
+                            color: "#003640",
                             fontFamily: "'JetBrains Mono', monospace",
                             fontSize: "12px",
                             letterSpacing: "0.1em",
-                            background: "#4cd7f6",
-                            color: "#003640",
-                            boxShadow: "0 0 15px rgba(76, 215, 246, 0.4)",
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            border: "none",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "8px",
+                            boxShadow: "0 0 15px rgba(76,215,246,0.4)",
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.background = "#7de8f8";
+                            e.currentTarget.style.boxShadow = "0 0 25px rgba(76,215,246,0.6)";
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.background = "#4cd7f6";
+                            e.currentTarget.style.boxShadow = "0 0 15px rgba(76,215,246,0.4)";
                         }}
                     >
                         <Plus size={16} />
