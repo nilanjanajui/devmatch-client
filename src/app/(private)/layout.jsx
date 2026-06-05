@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/dashboard/Sidebar"; // adjust path if needed
-import { useAuth } from "@/context/AuthContext";       // adjust path if needed
+import Image from "next/image";
+import Sidebar from "@/components/dashboard/Sidebar";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PrivateLayout({ children }) {
     const { user, loading } = useAuth();
@@ -49,7 +50,7 @@ export default function PrivateLayout({ children }) {
 
             {/* Main area */}
             <div style={{
-                marginLeft: "196px",
+                marginLeft: "250px",
                 flex: 1,
                 display: "flex",
                 flexDirection: "column",
@@ -109,10 +110,11 @@ export default function PrivateLayout({ children }) {
                             color: "#adc6ff",
                         }}>
                             {user?.photoURL
-                                ? <img
+                                ? <Image
                                     src={user.photoURL}
                                     alt="avatar"
-                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    fill
+                                    style={{ objectFit: "cover" }}
                                     onError={e => { e.target.style.display = "none"; }}
                                 />
                                 : (user?.displayName?.charAt(0) || user?.email?.charAt(0) || "D").toUpperCase()
@@ -134,7 +136,7 @@ export default function PrivateLayout({ children }) {
                 </div>
 
                 {/* Page content */}
-                <main style={{ flex: 1 }}>
+                <main className="flex flex-1 flex-col min-h-[calc(100vh-3.5rem)]">
                     {children}
                 </main>
             </div>
