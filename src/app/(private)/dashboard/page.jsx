@@ -150,10 +150,10 @@ export default function DashboardOverview() {
                                     position: "absolute",
                                     top: 0,
                                     left: 0,
-                                    width: "45%",
+                                    width: "40%",
                                     height: "100%",
                                     background: "linear-gradient(90deg, transparent 0%, rgba(173,198,255,0.10) 50%, transparent 100%)",
-                                    animation: "devmatchShine 3.5s ease-in-out infinite",
+                                    animation: "devmatchShine 3s ease-in-out infinite",
                                 }} />
                             </div>
 
