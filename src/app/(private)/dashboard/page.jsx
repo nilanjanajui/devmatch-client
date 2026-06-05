@@ -4,8 +4,7 @@ import Link from "next/link";
 import {
     FolderPlus, Compass, BadgeCheck,
     ArrowRight, ExternalLink, Edit,
-    Lightbulb, Users,
-} from "lucide-react";
+    Lightbulb, Users} from "lucide-react";
 
 // ── change this import to match your auth context ──
 import { useAuth } from "@/context/AuthContext";
@@ -693,7 +692,7 @@ export default function DashboardOverview() {
                             Social
                         </h4>
                         <div style={{ display: "flex", gap: "16px" }}>
-                            {["GH", "LI", "X"].map(s => (
+                            {["facebook", "LinkedIn", "Twitter"].map(s => (
                                 <span
                                     key={s}
                                     style={{ fontSize: "14px", color: "#c2c6d6", cursor: "pointer", transition: "color 0.2s" }}
