@@ -1,61 +1,143 @@
 "use client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import { useAuth } from "@/context/AuthContext";
 
-function hasAuthCookie() {
-    if (typeof document === "undefined") return false;
-    return document.cookie.split(";").some(c => c.trim().startsWith("auth_status=1"));
-}
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Sidebar from "@/components/dashboard/Sidebar"; // adjust path if needed
+import { useAuth } from "@/context/AuthContext";       // adjust path if needed
 
 export default function PrivateLayout({ children }) {
-    const { isLoggedIn, isLoading } = useAuth();
+    const { user, loading } = useAuth();
     const router = useRouter();
-    const authed = hasAuthCookie();
 
     useEffect(() => {
-        if (!authed) {
-            router.push("/login");
-            return;
+        if (!loading && !user) {
+            router.replace("/login");
         }
-    }, [authed, isLoggedIn, isLoading, router]);
+    }, [user, loading, router]);
 
-    if (!authed) {
+    if (loading) {
         return (
-            <div className="flex min-h-screen bg-[#0a0f1a] items-center justify-center">
-                <div className="w-8 h-8 border-2 border-[#00e5ff] border-t-transparent rounded-full animate-spin" />
+            <div style={{
+                minHeight: "100vh",
+                background: "#0b1326",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+            }}>
+                <div style={{
+                    width: "40px", height: "40px",
+                    border: "3px solid rgba(173,198,255,0.1)",
+                    borderTop: "3px solid #4cd7f6",
+                    borderRadius: "50%",
+                    animation: "spin 0.8s linear infinite",
+                }} />
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
         );
     }
 
+    if (!user) return null;
+
+    const firstName = user?.displayName?.split(" ")[0] || user?.email?.split("@")[0] || "Developer";
+    const fullName = user?.displayName || user?.email?.split("@")[0] || "Developer";
+
     return (
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset className="bg-[#0a0f1a]">
-                {/* Top bar */}
-                <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-2
-                    bg-[#0a0f1a] border-b border-white/5 px-4
-                    transition-[width,height] ease-linear
-                    group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                    <SidebarTrigger
-                        className="-ml-1 text-white/40 hover:text-white
-                            hover:bg-white/5 rounded-lg transition-colors"
-                    />
-                    <Separator
-                        orientation="vertical"
-                        className="mr-2 bg-white/10 data-[orientation=vertical]:h-4"
-                    />
-                    <p className="text-white/30 text-xs font-mono tracking-wide">Dev Console</p>
-                </header>
+        <div style={{ display: "flex", minHeight: "100vh", background: "#0b1326" }}>
+
+            {/* Sidebar */}
+            <Sidebar user={user} />
+
+            {/* Main area */}
+            <div style={{
+                marginLeft: "196px",
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+                position: "relative",
+            }}>
+
+                {/* ── Top Right User Bar ── */}
+                <div style={{
+                    position: "fixed",
+                    top: "20px",
+                    right: "32px",
+                    zIndex: 50,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "14px",
+                }}>
+                    {/* Name + Role */}
+                    <div style={{ textAlign: "right" }}>
+                        <p style={{
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontSize: "15px",
+                            fontWeight: 600,
+                            color: "#dae2fd",
+                            margin: 0,
+                            lineHeight: 1.2,
+                        }}>
+                            {fullName}
+                        </p>
+                        <p style={{
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: "11px",
+                            color: "#4cd7f6",
+                            margin: 0,
+                            marginTop: "2px",
+                            letterSpacing: "0.05em",
+                        }}>
+                            {user?.role || "Developer"}
+                        </p>
+                    </div>
+
+                    {/* Avatar with green dot */}
+                    <div style={{ position: "relative", flexShrink: 0 }}>
+                        <div style={{
+                            width: "42px",
+                            height: "42px",
+                            borderRadius: "50%",
+                            overflow: "hidden",
+                            border: "2px solid rgba(76,215,246,0.4)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background: "rgba(173,198,255,0.15)",
+                            fontFamily: "'Space Grotesk', sans-serif",
+                            fontWeight: 700,
+                            fontSize: "16px",
+                            color: "#adc6ff",
+                        }}>
+                            {user?.photoURL
+                                ? <img
+                                    src={user.photoURL}
+                                    alt="avatar"
+                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                    onError={e => { e.target.style.display = "none"; }}
+                                />
+                                : (user?.displayName?.charAt(0) || user?.email?.charAt(0) || "D").toUpperCase()
+                            }
+                        </div>
+
+                        {/* Green online dot */}
+                        <div style={{
+                            position: "absolute",
+                            bottom: "1px",
+                            right: "1px",
+                            width: "11px",
+                            height: "11px",
+                            borderRadius: "50%",
+                            background: "#22c55e",
+                            border: "2px solid #0b1326",
+                        }} />
+                    </div>
+                </div>
 
                 {/* Page content */}
-                <main className="flex flex-1 flex-col p-6 md:p-8 min-h-[calc(100vh-3.5rem)]">
+                <main style={{ flex: 1 }}>
                     {children}
                 </main>
-            </SidebarInset>
-        </SidebarProvider>
+            </div>
+        </div>
     );
 }

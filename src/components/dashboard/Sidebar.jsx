@@ -15,108 +15,54 @@ const navItems = [
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
-export default function Sidebar({ user }) {
+export default function Sidebar() {
     const pathname = usePathname();
 
     return (
         <aside style={{
             height: "100vh",
-            width: "256px",
+            width: "196px",
             position: "fixed",
             left: 0,
             top: 0,
             zIndex: 40,
             display: "flex",
             flexDirection: "column",
-            paddingTop: "24px",
+            paddingTop: "28px",
             paddingBottom: "24px",
-            background: "rgba(23, 31, 51, 0.75)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            borderRight: "1px solid rgba(76, 215, 246, 0.15)",
-            boxShadow: "5px 0 15px rgba(76, 215, 246, 0.05)",
+            background: "#0d1421",
+            borderRight: "1px solid rgba(255,255,255,0.05)",
         }}>
 
-            {/* Brand */}
-            <div style={{ padding: "0 24px", marginBottom: "40px" }}>
+            {/* Brand — "Dev Console / Pro Account" */}
+            <div style={{ padding: "0 20px", marginBottom: "36px" }}>
                 <h1 style={{
                     fontFamily: "'Space Grotesk', sans-serif",
-                    fontSize: "20px",
+                    fontSize: "17px",
                     fontWeight: 700,
-                    color: "#adc6ff",
+                    color: "#4cd7f6",
                     margin: 0,
+                    letterSpacing: "-0.01em",
                 }}>
-                    DevMatch
+                    Dev Console
                 </h1>
                 <p style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: "10px",
-                    letterSpacing: "0.15em",
-                    textTransform: "uppercase",
-                    color: "rgba(194,198,214,0.5)",
-                    marginTop: "4px",
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "12px",
+                    color: "rgba(255,255,255,0.45)",
+                    marginTop: "3px",
                     marginBottom: 0,
                 }}>
-                    Engineering the Future
+                    Pro Account
                 </p>
             </div>
 
-            {/* User */}
-            <div style={{
-                padding: "0 24px",
-                marginBottom: "32px",
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-            }}>
-                <div style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    flexShrink: 0,
-                    overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: 700,
-                    fontSize: "16px",
-                    border: "1px solid rgba(76,215,246,0.3)",
-                    background: "rgba(173,198,255,0.15)",
-                    color: "#adc6ff",
-                }}>
-                    {user?.photoURL
-                        ? <img src={user.photoURL} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        : (user?.displayName?.charAt(0) || user?.email?.charAt(0) || "D").toUpperCase()
-                    }
-                </div>
-                <div>
-                    <p style={{
-                        fontFamily: "'Space Grotesk', sans-serif",
-                        fontSize: "14px",
-                        fontWeight: 700,
-                        color: "#dae2fd",
-                        margin: 0,
-                    }}>
-                        {user?.displayName?.split(" ")[0] || user?.email?.split("@")[0] || "Developer"}
-                    </p>
-                    <p style={{
-                        fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: "10px",
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        color: "#4cd7f6",
-                        margin: 0,
-                    }}>
-                        Pro Account
-                    </p>
-                </div>
-            </div>
-
-            {/* Nav */}
+            {/* Nav Items */}
             <nav style={{ flex: 1 }}>
                 {navItems.map(({ href, label, icon: Icon }) => {
                     const isActive =
-                        pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+                        pathname === href ||
+                        (href !== "/dashboard" && pathname.startsWith(href));
 
                     return (
                         <Link
@@ -125,34 +71,34 @@ export default function Sidebar({ user }) {
                             style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "12px",
-                                padding: "12px 24px",
+                                gap: "10px",
+                                padding: "10px 20px",
                                 textDecoration: "none",
                                 transition: "all 0.2s ease",
-                                borderRight: isActive ? "4px solid #4cd7f6" : "4px solid transparent",
-                                background: isActive ? "rgba(76,215,246,0.1)" : "transparent",
-                                color: isActive ? "#4cd7f6" : "#c2c6d6",
+                                borderRight: isActive ? "3px solid #4cd7f6" : "3px solid transparent",
+                                background: isActive ? "rgba(76,215,246,0.08)" : "transparent",
+                                color: isActive ? "#4cd7f6" : "rgba(255,255,255,0.55)",
+                                marginBottom: "2px",
                             }}
                             onMouseEnter={e => {
                                 if (!isActive) {
-                                    e.currentTarget.style.background = "rgba(45,52,73,0.4)";
-                                    e.currentTarget.style.color = "#dae2fd";
+                                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                                    e.currentTarget.style.color = "rgba(255,255,255,0.85)";
                                 }
                             }}
                             onMouseLeave={e => {
                                 if (!isActive) {
                                     e.currentTarget.style.background = "transparent";
-                                    e.currentTarget.style.color = "#c2c6d6";
+                                    e.currentTarget.style.color = "rgba(255,255,255,0.55)";
                                 }
                             }}
                         >
-                            <Icon size={20} />
+                            <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
                             <span style={{
-                                fontFamily: "'JetBrains Mono', monospace",
-                                fontSize: "12px",
-                                letterSpacing: "0.1em",
-                                fontWeight: 600,
-                                textTransform: "uppercase",
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: "14px",
+                                fontWeight: isActive ? 600 : 400,
+                                letterSpacing: "0.01em",
                             }}>
                                 {label}
                             </span>
@@ -161,37 +107,35 @@ export default function Sidebar({ user }) {
                 })}
             </nav>
 
-            {/* New Project */}
-            <div style={{ padding: "0 24px", marginTop: "auto" }}>
+            {/* New Project Button */}
+            <div style={{ padding: "0 16px", marginTop: "auto" }}>
                 <Link href="/dashboard/projects/create" style={{ textDecoration: "none" }}>
                     <button
                         style={{
                             width: "100%",
-                            padding: "12px",
+                            padding: "11px",
                             borderRadius: "8px",
                             background: "#4cd7f6",
-                            color: "#003640",
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: "12px",
-                            letterSpacing: "0.1em",
+                            color: "#002a33",
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: "14px",
                             fontWeight: 700,
-                            textTransform: "uppercase",
                             border: "none",
                             cursor: "pointer",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            gap: "8px",
-                            boxShadow: "0 0 15px rgba(76,215,246,0.4)",
+                            gap: "6px",
+                            boxShadow: "0 0 18px rgba(76,215,246,0.35)",
                             transition: "all 0.2s ease",
                         }}
                         onMouseEnter={e => {
                             e.currentTarget.style.background = "#7de8f8";
-                            e.currentTarget.style.boxShadow = "0 0 25px rgba(76,215,246,0.6)";
+                            e.currentTarget.style.boxShadow = "0 0 28px rgba(76,215,246,0.55)";
                         }}
                         onMouseLeave={e => {
                             e.currentTarget.style.background = "#4cd7f6";
-                            e.currentTarget.style.boxShadow = "0 0 15px rgba(76,215,246,0.4)";
+                            e.currentTarget.style.boxShadow = "0 0 18px rgba(76,215,246,0.35)";
                         }}
                     >
                         <Plus size={16} />
