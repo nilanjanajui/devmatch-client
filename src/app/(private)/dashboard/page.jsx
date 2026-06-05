@@ -346,7 +346,7 @@ export default function DashboardOverview() {
                                 </p>
                             </div>
 
-                            <Link href="/projects" style={{ textDecoration: "none" }}>
+                            <Link href="components/projects" style={{ textDecoration: "none" }}>
                                 <div style={{
                                     marginTop: "24px",
                                     display: "flex",
