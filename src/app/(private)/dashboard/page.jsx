@@ -98,12 +98,12 @@ export default function DashboardOverview() {
                 <h3 style={{
                     fontFamily: "'JetBrains Mono', monospace",
                     fontSize: "12px",
-                    fontWeight: 600,
+                    fontWeight: 800,
                     letterSpacing: "0.2em",
                     textTransform: "uppercase",
                     color: "#adc6ff",
                     marginBottom: "24px",
-                    marginTop: 0,
+                    marginTop: "24px",
                 }}>
                     Initialize Your Journey
                 </h3>
