@@ -121,6 +121,7 @@ export default function DashboardOverview() {
                             style={{
                                 ...CARD.base,
                                 border: "1px solid rgba(173,198,255,0.12)",
+                                overflow: "hidden",
                             }}
                             onMouseEnter={e => {
                                 e.currentTarget.style.boxShadow = "0 0 28px rgba(173,198,255,0.2)";
@@ -131,12 +132,30 @@ export default function DashboardOverview() {
                                 e.currentTarget.style.borderColor = "rgba(173,198,255,0.12)";
                             }}
                         >
+                            <style>{`
+            @keyframes devmatchShine {
+                0%   { transform: translateX(-150%) skewX(-20deg); }
+                60%, 100% { transform: translateX(350%) skewX(-20deg); }
+            }
+        `}</style>
+
                             {/* shimmer overlay */}
                             <div style={{
                                 position: "absolute", inset: 0,
-                                background: "linear-gradient(135deg, transparent 40%, rgba(173,198,255,0.04) 50%, transparent 60%)",
+                                overflow: "hidden",
+                                borderRadius: "inherit",
                                 pointerEvents: "none",
-                            }} />
+                            }}>
+                                <div style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "45%",
+                                    height: "100%",
+                                    background: "linear-gradient(90deg, transparent 0%, rgba(173,198,255,0.10) 50%, transparent 100%)",
+                                    animation: "devmatchShine 3.5s ease-in-out infinite",
+                                }} />
+                            </div>
 
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                 <div style={{
