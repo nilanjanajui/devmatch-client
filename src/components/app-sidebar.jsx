@@ -1,109 +1,124 @@
 "use client";
+
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import {
     LayoutDashboard, FolderKanban, MessageSquare,
     BarChart2, Settings, Plus,
 } from "lucide-react";
 import {
-    Sidebar, SidebarContent, SidebarFooter,
-    SidebarHeader, SidebarMenu, SidebarMenuButton,
-    SidebarMenuItem, SidebarRail,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuItem,
+    SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
 const navItems = [
-    { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Projects", href: "/dashboard/projects", icon: FolderKanban },
-    { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
-    { label: "Analytics", href: "/dashboard/analytics", icon: BarChart2 },
-    { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
+    { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
+    { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
+    { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
-export function AppSidebar({ ...props }) {
+export function AppSidebar() {
     const pathname = usePathname();
-    const { user } = useAuth();
-    const initial = (user?.name ?? "A").charAt(0);
 
     return (
-        <Sidebar collapsible="icon" {...props}>
+        <Sidebar
+            collapsible="icon"
+            style={{
+                background: "#0d1421",
+                borderRight: "1px solid rgba(255,255,255,0.05)",
+            }}
+        >
+            {/* ── Brand ── */}
+            <SidebarHeader style={{ padding: "24px 20px 20px" }}>
+                <div className="group-data-[collapsible=icon]:hidden">
+                    <h1 style={{
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSize: "17px",
+                        fontWeight: 700,
+                        color: "#4cd7f6",
+                        margin: 0,
+                        letterSpacing: "-0.01em",
+                    }}>
+                        Dev Console
+                    </h1>
+                    <p style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: "12px",
+                        color: "rgba(255,255,255,0.4)",
+                        marginTop: "3px",
+                        marginBottom: 0,
+                    }}>
+                        Pro Account
+                    </p>
+                </div>
 
-            {/* ── Brand ─────────────────────────────────── */}
-            <SidebarHeader className="border-b border-sidebar-border px-5 py-5">
-                <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-                    {/* Icon-only logo shown in collapsed state */}
-                    <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 text-[#0a0f1a]"
-                        style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)" }}
-                    >
-                        D
-                    </div>
-                    <div className="group-data-[collapsible=icon]:hidden overflow-hidden">
-                        <p className="text-white font-bold text-base tracking-tight leading-none font-mono">
-                            DevMatch
-                        </p>
-                        <p className="text-white/25 text-[10px] uppercase tracking-[0.15em] font-mono mt-0.5">
-                            Engineering the Future
-                        </p>
+                {/* Icon-only state — show small diamond */}
+                <div
+                    className="hidden group-data-[collapsible=icon]:flex"
+                    style={{ justifyContent: "center" }}
+                >
+                    <div style={{
+                        width: "28px", height: "28px",
+                        borderRadius: "6px",
+                        background: "rgba(76,215,246,0.15)",
+                        border: "1px solid rgba(76,215,246,0.3)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}>
+                        <div style={{
+                            width: "8px", height: "8px",
+                            borderRadius: "2px",
+                            background: "#4cd7f6",
+                            transform: "rotate(45deg)",
+                        }} />
                     </div>
                 </div>
             </SidebarHeader>
 
-            {/* ── User ──────────────────────────────────── */}
-            <div className="px-4 py-3 border-b border-sidebar-border">
-                <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
-                    <div className="relative shrink-0">
-                        {user?.image ? (
-                            <Image
-                                src={user.image} alt={user?.name ?? "User"}
-                                width={32} height={32}
-                                className="rounded-full object-cover w-8 h-8"
-                                referrerPolicy="no-referrer"
-                            />
-                        ) : (
-                            <div
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-[#0a0f1a] font-bold text-xs"
-                                style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)" }}
-                            >
-                                {initial}
-                            </div>
-                        )}
-                        <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-400 rounded-full border border-[#0d1421]" />
-                    </div>
-                    <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-                        <p className="text-white text-sm font-semibold font-mono truncate leading-tight">
-                            {user?.name ?? "Developer"}
-                        </p>
-                        <span className="text-cyan text-[10px] font-mono uppercase tracking-widest">
-                            Pro Account
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Nav ───────────────────────────────────── */}
-            <SidebarContent className="px-3 py-4">
+            {/* ── Nav ── */}
+            <SidebarContent style={{ padding: "4px 0" }}>
                 <SidebarMenu>
-                    {navItems.map(({ label, href, icon: Icon }) => {
-                        const active =
+                    {navItems.map(({ href, label, icon: Icon }) => {
+                        const isActive =
                             pathname === href ||
                             (href !== "/dashboard" && pathname.startsWith(href));
+
                         return (
                             <SidebarMenuItem key={href}>
                                 <SidebarMenuButton
                                     asChild
-                                    isActive={active}
+                                    isActive={isActive}
                                     tooltip={label}
-                                    className={`font-mono text-sm rounded-lg transition-colors
-                                        ${active
-                                            ? "bg-[#00e5ff]/10 text-[#00e5ff]! border-l-2 border-[#00e5ff] pl-2.5"
-                                            : "text-white/50 hover:text-white/80 hover:bg-white/5"
-                                        }`}
+                                    style={{
+                                        borderRight: isActive ? "3px solid #4cd7f6" : "3px solid transparent",
+                                        background: isActive ? "rgba(76,215,246,0.08)" : "transparent",
+                                        color: isActive ? "#4cd7f6" : "rgba(255,255,255,0.5)",
+                                        borderRadius: 0,
+                                        padding: "10px 20px",
+                                        marginBottom: "2px",
+                                        transition: "all 0.2s ease",
+                                    }}
                                 >
                                     <Link href={href}>
-                                        <Icon size={16} />
-                                        <span>{label}</span>
+                                        <Icon
+                                            size={18}
+                                            strokeWidth={isActive ? 2 : 1.5}
+                                        />
+                                        <span style={{
+                                            fontFamily: "'Inter', sans-serif",
+                                            fontSize: "14px",
+                                            fontWeight: isActive ? 600 : 400,
+                                        }}>
+                                            {label}
+                                        </span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
@@ -112,27 +127,46 @@ export function AppSidebar({ ...props }) {
                 </SidebarMenu>
             </SidebarContent>
 
-            {/* ── New Project button ─────────────────────── */}
-            <SidebarFooter className="p-3 border-t border-sidebar-border">
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            asChild
-                            tooltip="New Project"
-                            className="bg-[#00e5ff] text-[#0a0f1a]! font-bold font-mono
-                                hover:bg-[#00e5ff]/90 justify-center rounded-xl transition-colors"
-                        >
-                            <Link href="/dashboard/projects/new">
-                                <Plus size={16} />
-                                <span>New Project</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+            {/* ── New Project Button ── */}
+            <SidebarFooter style={{ padding: "16px" }}>
+                <Link href="/dashboard/projects/create" style={{ textDecoration: "none" }}>
+                    <button
+                        style={{
+                            width: "100%",
+                            padding: "11px",
+                            borderRadius: "8px",
+                            background: "#4cd7f6",
+                            color: "#002a33",
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: "14px",
+                            fontWeight: 700,
+                            border: "none",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            gap: "6px",
+                            boxShadow: "0 0 18px rgba(76,215,246,0.35)",
+                            transition: "all 0.2s ease",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.background = "#7de8f8";
+                            e.currentTarget.style.boxShadow = "0 0 28px rgba(76,215,246,0.55)";
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.background = "#4cd7f6";
+                            e.currentTarget.style.boxShadow = "0 0 18px rgba(76,215,246,0.35)";
+                        }}
+                    >
+                        <Plus size={16} style={{ flexShrink: 0 }} />
+                        <span className="group-data-[collapsible=icon]:hidden">
+                            New Project
+                        </span>
+                    </button>
+                </Link>
             </SidebarFooter>
-
-            {/* Collapse rail — hover on the edge to collapse */}
-            <SidebarRail />
         </Sidebar>
     );
 }
