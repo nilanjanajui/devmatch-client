@@ -9,6 +9,60 @@ import { toast } from "sonner";
 
 const SKILL_LEVELS = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
+const inputStyle = {
+    width: "100%", background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12,
+    padding: "10px 16px", color: "#fff", fontSize: 13,
+    fontFamily: "monospace", outline: "none",
+    boxSizing: "border-box",
+    transition: "border-color 0.2s",
+};
+
+const labelStyle = {
+    color: "rgba(255,255,255,0.4)", fontSize: 11,
+    fontFamily: "monospace", textTransform: "uppercase",
+    letterSpacing: "0.1em", display: "block", marginBottom: 8,
+};
+
+function Field({ label, children }) {
+    return (
+        <div>
+            <label style={labelStyle}>{label}</label>
+            {children}
+        </div>
+    );
+}
+
+function TextInput({ value, onChange, placeholder, type = "text" }) {
+    return (
+        <input
+            type={type}
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            style={inputStyle}
+            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }}
+            onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }}
+        />
+    );
+}
+
+function TextArea({ value, onChange, placeholder, rows = 3 }) {
+    return (
+        <textarea
+            value={value}
+            onChange={onChange}
+            placeholder={placeholder}
+            rows={rows}
+            style={{ ...inputStyle, resize: "none" }}
+            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }}
+            onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }}
+        />
+    );
+}
+
+const divider = <div style={{ height: 1, background: "rgba(255,255,255,0.05)", margin: "4px 0" }} />;
+
 function ProfileForm({ profile }) {
     const { user } = useAuth();
     const qc = useQueryClient();
@@ -20,15 +74,18 @@ function ProfileForm({ profile }) {
         github:            profile?.github            ?? "",
         linkedin:          profile?.linkedin          ?? "",
         portfolio:         profile?.portfolio         ?? "",
+        collaborations:    profile?.collaborations    ?? 0,
+        contributionScore: profile?.contributionScore ?? "",
+        followers:         profile?.followers         ?? 0,
         skills:            profile?.skills            ?? [],
         experienceEntries: profile?.experienceEntries ?? [],
         testimonials:      profile?.testimonials      ?? [],
     });
 
-    const [newSkill,       setNewSkill]       = useState({ name: "", level: "Intermediate" });
-    const [newExp,         setNewExp]         = useState({ role: "", company: "", period: "", description: "" });
-    const [newTestimonial, setNewTestimonial] = useState({ quote: "", authorName: "", authorRole: "" });
-    const [saved,          setSaved]          = useState(false);
+    const [newSkill, setNewSkill] = useState({ name: "", level: "Intermediate", percentage: 80 });
+    const [newExp,   setNewExp]   = useState({ role: "", company: "", period: "", description: "" });
+    const [newTesti, setNewTesti] = useState({ quote: "", authorName: "", authorRole: "" });
+    const [saved,    setSaved]    = useState(false);
 
     const { mutate: saveProfile, isPending } = useMutation({
         mutationFn: () => axiosInstance.patch("/users/profile", form),
@@ -41,295 +98,244 @@ function ProfileForm({ profile }) {
         onError: () => toast.error("Failed to save profile."),
     });
 
-    // ── skill helpers
     const addSkill = () => {
         if (!newSkill.name.trim()) return;
-        setForm(f => ({ ...f, skills: [...f.skills, { ...newSkill }] }));
-        setNewSkill({ name: "", level: "Intermediate" });
+        setForm(f => ({ ...f, skills: [...f.skills, { ...newSkill, percentage: Number(newSkill.percentage) }] }));
+        setNewSkill({ name: "", level: "Intermediate", percentage: 80 });
     };
-    const removeSkill = (i) =>
-        setForm(f => ({ ...f, skills: f.skills.filter((_, idx) => idx !== i) }));
+    const removeSkill = (i) => setForm(f => ({ ...f, skills: f.skills.filter((_, idx) => idx !== i) }));
 
-    // ── experience helpers
     const addExp = () => {
         if (!newExp.role.trim()) return;
         setForm(f => ({ ...f, experienceEntries: [...f.experienceEntries, { ...newExp }] }));
         setNewExp({ role: "", company: "", period: "", description: "" });
     };
-    const removeExp = (i) =>
-        setForm(f => ({ ...f, experienceEntries: f.experienceEntries.filter((_, idx) => idx !== i) }));
+    const removeExp = (i) => setForm(f => ({ ...f, experienceEntries: f.experienceEntries.filter((_, idx) => idx !== i) }));
 
-    // ── testimonial helpers
-    const addTestimonial = () => {
-        if (!newTestimonial.quote.trim()) return;
-        setForm(f => ({ ...f, testimonials: [...f.testimonials, { ...newTestimonial }] }));
-        setNewTestimonial({ quote: "", authorName: "", authorRole: "" });
+    const addTesti = () => {
+        if (!newTesti.quote.trim()) return;
+        setForm(f => ({ ...f, testimonials: [...f.testimonials, { ...newTesti }] }));
+        setNewTesti({ quote: "", authorName: "", authorRole: "" });
     };
-    const removeTestimonial = (i) =>
-        setForm(f => ({ ...f, testimonials: f.testimonials.filter((_, idx) => idx !== i) }));
+    const removeTesti = (i) => setForm(f => ({ ...f, testimonials: f.testimonials.filter((_, idx) => idx !== i) }));
 
-    // ── reusable text field
-    const field = (label, key, placeholder, type = "text") => (
-        <div>
-            <label className="text-white/40 text-xs font-mono uppercase tracking-widest block mb-2">
-                {label}
-            </label>
-            {type === "textarea" ? (
-                <textarea
-                    value={form[key]}
-                    onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                    placeholder={placeholder}
-                    rows={3}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 resize-none transition-colors"
-                />
-            ) : (
-                <input
-                    type="text"
-                    value={form[key]}
-                    onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                    placeholder={placeholder}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                />
-            )}
-        </div>
+    const CARD = {
+        background: "#0d1421", border: "1px solid rgba(255,255,255,0.05)",
+        borderRadius: 16, padding: 24, marginBottom: 16,
+        display: "flex", flexDirection: "column", gap: 20,
+    };
+
+    const sectionTitle = (label) => (
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.1em", margin: 0 }}>
+            {label}
+        </p>
     );
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="bg-[#0d1421] border border-white/5 rounded-2xl p-6 space-y-6"
-        >
-            {/* ── Avatar row */}
-            <div className="flex items-center gap-4">
-                <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-[#0a0f1a] font-bold text-2xl shrink-0"
-                    style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)" }}
-                >
-                    {(user?.name ?? "A").charAt(0)}
-                </div>
-                <div>
-                    <p className="text-white font-mono font-semibold">{user?.name}</p>
-                    <p className="text-white/30 text-xs font-mono">{user?.email}</p>
-                </div>
-            </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
 
-            <div className="h-px bg-white/5" />
-
-            {/* ── Identity */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {field("Job Title", "title",    "e.g. Full-Stack Engineer")}
-                {field("Location",  "location", "e.g. San Francisco")}
-            </div>
-            {field("Bio", "bio", "Tell the community about yourself…", "textarea")}
-
-            <div className="h-px bg-white/5" />
-
-            {/* ── Links */}
-            {field("GitHub URL",    "github",    "https://github.com/yourusername")}
-            {field("LinkedIn URL",  "linkedin",  "https://linkedin.com/in/yourprofile")}
-            {field("Portfolio URL", "portfolio", "https://yourportfolio.dev")}
-
-            <div className="h-px bg-white/5" />
-
-            {/* ── Skills */}
-            <div>
-                <label className="text-white/40 text-xs font-mono uppercase tracking-widest block mb-3">
-                    Skills
-                </label>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {form.skills.map((s, i) => (
-                        <motion.div
-                            key={i} layout
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1,   opacity: 1 }}
-                            className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5"
-                        >
-                            <span className="text-white/80 text-xs font-mono">{s.name}</span>
-                            <span className="text-white/30 text-xs font-mono">{s.level}</span>
-                            <button onClick={() => removeSkill(i)} className="text-white/20 hover:text-red-400 transition-colors">
-                                <X size={12} />
-                            </button>
-                        </motion.div>
-                    ))}
-                </div>
-
-                <div className="flex gap-2">
-                    <input
-                        value={newSkill.name}
-                        onChange={e => setNewSkill(s => ({ ...s, name: e.target.value }))}
-                        onKeyDown={e => e.key === "Enter" && addSkill()}
-                        placeholder="e.g. React"
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                    />
-                    <select
-                        value={newSkill.level}
-                        onChange={e => setNewSkill(s => ({ ...s, level: e.target.value }))}
-                        className="bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                    >
-                        {SKILL_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                    </select>
-                    <motion.button
-                        whileTap={{ scale: 0.9 }}
-                        onClick={addSkill}
-                        className="w-10 h-10 rounded-xl bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center text-[#00e5ff] hover:bg-[#00e5ff]/20 transition-colors shrink-0"
-                    >
-                        <Plus size={16} />
-                    </motion.button>
-                </div>
-            </div>
-
-            <div className="h-px bg-white/5" />
-
-            {/* ── Experience */}
-            <div>
-                <div className="flex items-center gap-2 mb-3">
-                    <Briefcase size={14} className="text-[#00e5ff]" />
-                    <label className="text-white/40 text-xs font-mono uppercase tracking-widest">
-                        Experience
-                    </label>
-                </div>
-
-                {/* Existing entries */}
-                <div className="space-y-3 mb-4">
-                    {form.experienceEntries.map((e, i) => (
-                        <motion.div
-                            key={i} layout
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start justify-between gap-3"
-                        >
-                            <div className="min-w-0">
-                                <p className="text-white/90 text-sm font-mono font-semibold">{e.role}</p>
-                                <p className="text-[#00e5ff] text-xs font-mono">{e.company} · {e.period}</p>
-                                {e.description && (
-                                    <p className="text-white/40 text-xs font-mono mt-1 line-clamp-2">{e.description}</p>
-                                )}
-                            </div>
-                            <button onClick={() => removeExp(i)} className="text-white/20 hover:text-red-400 transition-colors shrink-0 mt-0.5">
-                                <X size={14} />
-                            </button>
-                        </motion.div>
-                    ))}
-                </div>
-
-                {/* Add new entry */}
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input
-                            value={newExp.role}
-                            onChange={e => setNewExp(x => ({ ...x, role: e.target.value }))}
-                            placeholder="Role (e.g. Senior Engineer)"
-                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                        />
-                        <input
-                            value={newExp.company}
-                            onChange={e => setNewExp(x => ({ ...x, company: e.target.value }))}
-                            placeholder="Company"
-                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                        />
+            {/* ── Identity ── */}
+            <div style={CARD}>
+                {sectionTitle("Identity")}
+                <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "4px 0" }}>
+                    <div style={{
+                        width: 56, height: 56, borderRadius: "50%", flexShrink: 0,
+                        background: "linear-gradient(135deg, #00e5ff, #7c3aed)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        color: "#0a0f1a", fontWeight: 700, fontSize: 20, fontFamily: "monospace",
+                    }}>
+                        {(user?.name ?? "A").charAt(0)}
                     </div>
-                    <input
-                        value={newExp.period}
-                        onChange={e => setNewExp(x => ({ ...x, period: e.target.value }))}
-                        placeholder="Period (e.g. 2021 — Present)"
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                    />
-                    <textarea
-                        value={newExp.description}
-                        onChange={e => setNewExp(x => ({ ...x, description: e.target.value }))}
-                        placeholder="Brief description of your role…"
-                        rows={2}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 resize-none transition-colors"
-                    />
-                    <motion.button
-                        whileTap={{ scale: 0.97 }}
-                        onClick={addExp}
-                        className="flex items-center gap-2 text-[#00e5ff] text-xs font-mono border border-[#00e5ff]/20 rounded-lg px-3 py-2 hover:bg-[#00e5ff]/10 transition-colors"
-                    >
-                        <Plus size={13} />
-                        Add Entry
-                    </motion.button>
-                </div>
-            </div>
-
-            <div className="h-px bg-white/5" />
-
-            {/* ── Testimonials */}
-            <div>
-                <div className="flex items-center gap-2 mb-3">
-                    <Quote size={14} className="text-[#00e5ff]" />
-                    <label className="text-white/40 text-xs font-mono uppercase tracking-widest">
-                        Testimonials
-                    </label>
-                </div>
-
-                <div className="space-y-3 mb-4">
-                    {form.testimonials.map((t, i) => (
-                        <motion.div
-                            key={i} layout
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/5 border border-white/10 rounded-xl p-4 flex items-start justify-between gap-3"
-                        >
-                            <div className="min-w-0">
-                                <p className="text-white/60 text-xs font-mono italic line-clamp-2">&quot;{t.quote}&quot;</p>
-                                <p className="text-white/30 text-xs font-mono mt-1">— {t.authorName}, {t.authorRole}</p>
-                            </div>
-                            <button onClick={() => removeTestimonial(i)} className="text-white/20 hover:text-red-400 transition-colors shrink-0 mt-0.5">
-                                <X size={14} />
-                            </button>
-                        </motion.div>
-                    ))}
-                </div>
-
-                <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
-                    <textarea
-                        value={newTestimonial.quote}
-                        onChange={e => setNewTestimonial(x => ({ ...x, quote: e.target.value }))}
-                        placeholder="What they said about you…"
-                        rows={2}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 resize-none transition-colors"
-                    />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <input
-                            value={newTestimonial.authorName}
-                            onChange={e => setNewTestimonial(x => ({ ...x, authorName: e.target.value }))}
-                            placeholder="Author name"
-                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                        />
-                        <input
-                            value={newTestimonial.authorRole}
-                            onChange={e => setNewTestimonial(x => ({ ...x, authorRole: e.target.value }))}
-                            placeholder="Their role / company"
-                            className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-mono placeholder-white/20 focus:outline-none focus:border-[#00e5ff]/40 transition-colors"
-                        />
+                    <div>
+                        <p style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, margin: 0 }}>{user?.name}</p>
+                        <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 12, fontFamily: "monospace", margin: "2px 0 0" }}>{user?.email}</p>
                     </div>
-                    <motion.button
-                        whileTap={{ scale: 0.97 }}
-                        onClick={addTestimonial}
-                        className="flex items-center gap-2 text-[#00e5ff] text-xs font-mono border border-[#00e5ff]/20 rounded-lg px-3 py-2 hover:bg-[#00e5ff]/10 transition-colors"
-                    >
-                        <Plus size={13} />
-                        Add Testimonial
+                </div>
+                {divider}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                    <Field label="Job Title">
+                        <TextInput value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Full-Stack Engineer" />
+                    </Field>
+                    <Field label="Location">
+                        <TextInput value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="e.g. San Francisco" />
+                    </Field>
+                </div>
+                <Field label="Bio">
+                    <TextArea value={form.bio} onChange={e => setForm(f => ({ ...f, bio: e.target.value }))} placeholder="Tell the community about yourself…" />
+                </Field>
+            </div>
+
+            {/* ── Links ── */}
+            <div style={CARD}>
+                {sectionTitle("Links")}
+                <Field label="GitHub URL">
+                    <TextInput value={form.github} onChange={e => setForm(f => ({ ...f, github: e.target.value }))} placeholder="https://github.com/username" />
+                </Field>
+                <Field label="LinkedIn URL">
+                    <TextInput value={form.linkedin} onChange={e => setForm(f => ({ ...f, linkedin: e.target.value }))} placeholder="https://linkedin.com/in/profile" />
+                </Field>
+                <Field label="Portfolio URL">
+                    <TextInput value={form.portfolio} onChange={e => setForm(f => ({ ...f, portfolio: e.target.value }))} placeholder="https://yourportfolio.dev" />
+                </Field>
+            </div>
+
+            {/* ── Stats ── */}
+            <div style={CARD}>
+                {sectionTitle("Public Stats")}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                    <Field label="Collaborations">
+                        <TextInput type="number" value={form.collaborations} onChange={e => setForm(f => ({ ...f, collaborations: Number(e.target.value) }))} placeholder="12" />
+                    </Field>
+                    <Field label="Contribution Score">
+                        <TextInput value={form.contributionScore} onChange={e => setForm(f => ({ ...f, contributionScore: e.target.value }))} placeholder="e.g. 98th" />
+                    </Field>
+                    <Field label="Followers">
+                        <TextInput type="number" value={form.followers} onChange={e => setForm(f => ({ ...f, followers: Number(e.target.value) }))} placeholder="1200" />
+                    </Field>
+                </div>
+            </div>
+
+            {/* ── Skills ── */}
+            <div style={CARD}>
+                {sectionTitle("Skills")}
+
+                {/* Existing */}
+                {form.skills.map((s, i) => (
+                    <motion.div key={i} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "10px 14px" }}>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                                <span style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontFamily: "monospace" }}>{s.name}</span>
+                                <span style={{ color: "#00e5ff", fontSize: 13, fontFamily: "monospace" }}>{s.percentage}%</span>
+                            </div>
+                            <div style={{ height: 3, background: "rgba(255,255,255,0.08)", borderRadius: 99 }}>
+                                <div style={{ height: "100%", width: `${s.percentage}%`, background: "linear-gradient(90deg, #00e5ff, #7c3aed)", borderRadius: 99 }} />
+                            </div>
+                            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "monospace" }}>{s.level}</span>
+                        </div>
+                        <button onClick={() => removeSkill(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.2)", marginLeft: 12, padding: 4 }}
+                            onMouseEnter={e => { e.currentTarget.style.color = "#f87171"; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.2)"; }}>
+                            <X size={14} />
+                        </button>
+                    </motion.div>
+                ))}
+
+                {/* Add new */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 80px", gap: 8 }}>
+                        <input value={newSkill.name} onChange={e => setNewSkill(s => ({ ...s, name: e.target.value }))}
+                            onKeyDown={e => e.key === "Enter" && addSkill()}
+                            placeholder="Skill name (e.g. React)" style={inputStyle}
+                            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }}
+                            onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                        <select value={newSkill.level} onChange={e => setNewSkill(s => ({ ...s, level: e.target.value }))}
+                            style={{ ...inputStyle, width: "100%" }}>
+                            {SKILL_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+                        </select>
+                        <input type="number" min={0} max={100} value={newSkill.percentage}
+                            onChange={e => setNewSkill(s => ({ ...s, percentage: e.target.value }))}
+                            placeholder="%" style={inputStyle}
+                            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }}
+                            onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                    </div>
+                    <motion.button whileTap={{ scale: 0.97 }} onClick={addSkill}
+                        style={{ display: "flex", alignItems: "center", gap: 6, color: "#00e5ff", fontSize: 12, fontFamily: "monospace", border: "1px solid rgba(0,229,255,0.2)", borderRadius: 8, padding: "6px 12px", background: "transparent", cursor: "pointer", width: "fit-content" }}>
+                        <Plus size={13} /> Add Skill
                     </motion.button>
                 </div>
             </div>
 
-            {/* ── Save */}
-            <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => saveProfile()}
-                disabled={isPending}
-                className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold font-mono text-sm transition-all ${
-                    saved
-                        ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                        : "bg-[#00e5ff] text-[#0a0f1a]"
-                }`}
-            >
+            {/* ── Experience ── */}
+            <div style={CARD}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Briefcase size={14} style={{ color: "#00e5ff" }} />
+                    {sectionTitle("Experience")}
+                </div>
+
+                {form.experienceEntries.map((e, i) => (
+                    <motion.div key={i} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        style={{ display: "flex", justifyContent: "space-between", gap: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 14px" }}>
+                        <div>
+                            <p style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 13, margin: "0 0 2px" }}>{e.role}</p>
+                            <p style={{ color: "#00e5ff", fontSize: 12, fontFamily: "monospace", margin: "0 0 4px" }}>{e.company} · {e.period}</p>
+                            {e.description && <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontFamily: "monospace", margin: 0, lineHeight: 1.6 }}>{e.description}</p>}
+                        </div>
+                        <button onClick={() => removeExp(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.2)", flexShrink: 0 }}
+                            onMouseEnter={e => { e.currentTarget.style.color = "#f87171"; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.2)"; }}>
+                            <X size={14} />
+                        </button>
+                    </motion.div>
+                ))}
+
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                        <input value={newExp.role} onChange={e => setNewExp(x => ({ ...x, role: e.target.value }))} placeholder="Role" style={inputStyle}
+                            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                        <input value={newExp.company} onChange={e => setNewExp(x => ({ ...x, company: e.target.value }))} placeholder="Company" style={inputStyle}
+                            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                    </div>
+                    <input value={newExp.period} onChange={e => setNewExp(x => ({ ...x, period: e.target.value }))} placeholder="Period (e.g. 2021 — Present)" style={inputStyle}
+                        onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                    <textarea value={newExp.description} onChange={e => setNewExp(x => ({ ...x, description: e.target.value }))} placeholder="Brief description…" rows={2}
+                        style={{ ...inputStyle, resize: "none" }}
+                        onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                    <motion.button whileTap={{ scale: 0.97 }} onClick={addExp}
+                        style={{ display: "flex", alignItems: "center", gap: 6, color: "#00e5ff", fontSize: 12, fontFamily: "monospace", border: "1px solid rgba(0,229,255,0.2)", borderRadius: 8, padding: "6px 12px", background: "transparent", cursor: "pointer", width: "fit-content" }}>
+                        <Plus size={13} /> Add Entry
+                    </motion.button>
+                </div>
+            </div>
+
+            {/* ── Testimonials ── */}
+            <div style={CARD}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Quote size={14} style={{ color: "#00e5ff" }} />
+                    {sectionTitle("Testimonials")}
+                </div>
+
+                {form.testimonials.map((t, i) => (
+                    <motion.div key={i} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                        style={{ display: "flex", justifyContent: "space-between", gap: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "12px 14px" }}>
+                        <div>
+                            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "monospace", fontStyle: "italic", margin: "0 0 6px", lineHeight: 1.6 }}>&quot;{t.quote}&quot;</p>
+                            <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "monospace", margin: 0 }}>— {t.authorName}, {t.authorRole}</p>
+                        </div>
+                        <button onClick={() => removeTesti(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.2)", flexShrink: 0 }}
+                            onMouseEnter={e => { e.currentTarget.style.color = "#f87171"; }}
+                            onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.2)"; }}>
+                            <X size={14} />
+                        </button>
+                    </motion.div>
+                ))}
+
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 12, padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+                    <textarea value={newTesti.quote} onChange={e => setNewTesti(x => ({ ...x, quote: e.target.value }))} placeholder="What they said about you…" rows={2}
+                        style={{ ...inputStyle, resize: "none" }}
+                        onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                        <input value={newTesti.authorName} onChange={e => setNewTesti(x => ({ ...x, authorName: e.target.value }))} placeholder="Author name" style={inputStyle}
+                            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                        <input value={newTesti.authorRole} onChange={e => setNewTesti(x => ({ ...x, authorRole: e.target.value }))} placeholder="Their role / company" style={inputStyle}
+                            onFocus={e => { e.target.style.borderColor = "rgba(0,229,255,0.4)"; }} onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; }} />
+                    </div>
+                    <motion.button whileTap={{ scale: 0.97 }} onClick={addTesti}
+                        style={{ display: "flex", alignItems: "center", gap: 6, color: "#00e5ff", fontSize: 12, fontFamily: "monospace", border: "1px solid rgba(0,229,255,0.2)", borderRadius: 8, padding: "6px 12px", background: "transparent", cursor: "pointer", width: "fit-content" }}>
+                        <Plus size={13} /> Add Testimonial
+                    </motion.button>
+                </div>
+            </div>
+
+            {/* ── Save ── */}
+            <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }} onClick={() => saveProfile()} disabled={isPending}
+                style={{
+                    width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    padding: "14px", borderRadius: 12, fontWeight: 700, fontFamily: "monospace", fontSize: 14,
+                    border: "none", cursor: "pointer", transition: "all 0.2s",
+                    background: saved ? "rgba(34,197,94,0.1)" : "#00e5ff",
+                    color: saved ? "#22c55e" : "#0a0f1a",
+                }}>
                 <Save size={15} />
                 {saved ? "Saved!" : isPending ? "Saving…" : "Save Changes"}
             </motion.button>
@@ -347,32 +353,21 @@ export default function ProfilePage() {
     });
 
     return (
-        <div className="max-w-2xl mx-auto pt-10 md:pt-0">
-            <motion.h1
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-2xl md:text-3xl font-bold text-white font-mono mb-2"
-            >
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "40px 24px 80px" }}>
+            <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                style={{ color: "#fff", fontFamily: "monospace", fontSize: 26, fontWeight: 700, margin: "0 0 6px" }}>
                 Edit Profile
             </motion.h1>
-            <p className="text-white/30 text-sm font-mono mb-8">
+            <p style={{ color: "rgba(255,255,255,0.3)", fontFamily: "monospace", fontSize: 13, margin: "0 0 32px" }}>
                 How others see you on DevMatch.
             </p>
 
             {isLoading ? (
-                <div className="bg-[#0d1421] border border-white/5 rounded-2xl p-6 space-y-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-full bg-white/5 animate-pulse shrink-0" />
-                        <div className="space-y-2 flex-1">
-                            <div className="h-4 w-32 bg-white/5 rounded-lg animate-pulse" />
-                            <div className="h-3 w-48 bg-white/5 rounded-lg animate-pulse" />
-                        </div>
-                    </div>
-                    {[...Array(5)].map((_, i) => (
-                        <div key={i} className="h-12 bg-white/5 rounded-xl animate-pulse" />
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {[96, 160, 100, 200, 220, 180].map((h, i) => (
+                        <div key={i} style={{ height: h, background: "rgba(255,255,255,0.04)", borderRadius: 16, animation: "pulse 1.5s infinite" }} />
                     ))}
-                    <div className="h-24 bg-white/5 rounded-xl animate-pulse" />
-                    <div className="h-12 bg-white/5 rounded-xl animate-pulse" />
+                    <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
                 </div>
             ) : (
                 <ProfileForm key={profile?._id} profile={profile} />
