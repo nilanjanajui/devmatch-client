@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
     LayoutDashboard, FolderKanban, MessageSquare,
-    BarChart2, Settings, Plus, Home, PanelLeftClose, PanelLeftOpen,
+    BarChart2, Settings, Plus, Home, PanelLeftClose, PanelLeftOpen, UserCircle
 } from "lucide-react";
 
 const navItems = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { href: "/dashboard/profile", label: "Profile", icon: UserCircle },
     { href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
     { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
     { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
