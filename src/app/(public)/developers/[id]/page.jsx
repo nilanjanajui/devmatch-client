@@ -19,35 +19,34 @@ function formatJoinDate(iso) {
 
 function difficultyColor(d) {
     const map = {
-        beginner:     "text-green-400  border-green-500/20  bg-green-500/10",
-        intermediate: "text-yellow-400 border-yellow-500/20 bg-yellow-500/10",
-        advanced:     "text-orange-400 border-orange-500/20 bg-orange-500/10",
-        expert:       "text-red-400    border-red-500/20    bg-red-500/10",
+        beginner:     { color: "#4ade80",  bg: "rgba(74,222,128,0.1)",  border: "rgba(74,222,128,0.25)"  },
+        intermediate: { color: "#facc15",  bg: "rgba(250,204,21,0.1)",  border: "rgba(250,204,21,0.25)"  },
+        hard:         { color: "#fb923c",  bg: "rgba(251,146,60,0.1)",  border: "rgba(251,146,60,0.25)"  },
+        expert:       { color: "#f87171",  bg: "rgba(248,113,113,0.1)", border: "rgba(248,113,113,0.25)" },
     };
     return map[d?.toLowerCase()] ?? map.beginner;
 }
 
 const levelColor = {
     Beginner:     "#6ee7b7",
-    Intermediate: "#2196f3",
-    Advanced:     "#00bcd4",
-    Senior:       "#7c3aed",
-    Expert:       "#00e5ff",
+    Intermediate: "#3b82f6",
+    Advanced:     "#00e5ff",
+    Expert:       "#7c3aed",
 };
 
 // ── SVG icons ──────────────────────────────────────────────────────────────
 
-function GithubIcon({ size = 16, className = "" }) {
+function GithubIcon({ size = 16 }) {
     return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.22.81 2.415 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
         </svg>
     );
 }
 
-function LinkedInIcon({ size = 16, className = "" }) {
+function LinkedInIcon({ size = 16 }) {
     return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
         </svg>
     );
@@ -55,26 +54,33 @@ function LinkedInIcon({ size = 16, className = "" }) {
 
 // ── sub-components ─────────────────────────────────────────────────────────
 
-function Avatar({ user, size = "lg" }) {
-    const dim = size === "lg" ? "w-24 h-24 text-3xl" : "w-10 h-10 text-sm";
-    const dimensions = size === "lg" ? { width: 96, height: 96 } : { width: 40, height: 40 };
+function Avatar({ user, size = 96 }) {
     if (user?.image) {
         return (
             <Image
                 src={user.image}
                 alt={user.name}
-                width={dimensions.width}
-                height={dimensions.height}
-                className={`${dim} rounded-full object-cover ring-2 ring-[#00e5ff]/30`}
+                width={size}
+                height={size}
+                style={{
+                    width: size, height: size,
+                    borderRadius: "50%", objectFit: "cover",
+                    border: "2px solid rgba(0,229,255,0.3)",
+                    flexShrink: 0, display: "block",
+                }}
             />
         );
     }
     return (
-        <div
-            className={`${dim} rounded-full flex items-center justify-center font-bold font-mono ring-2 ring-[#00e5ff]/30`}
-            style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)", color: "#0a0f1a" }}
-        >
-            {(user?.name ?? "?").charAt(0)}
+        <div style={{
+            width: size, height: size, borderRadius: "50%",
+            background: "linear-gradient(135deg, #00e5ff, #7c3aed)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#0a0f1a", fontWeight: 700,
+            fontSize: Math.round(size * 0.35), fontFamily: "monospace",
+            border: "2px solid rgba(0,229,255,0.3)", flexShrink: 0,
+        }}>
+            {(user?.name ?? "?").charAt(0).toUpperCase()}
         </div>
     );
 }
@@ -82,88 +88,106 @@ function Avatar({ user, size = "lg" }) {
 function SkillChip({ skill }) {
     const color = levelColor[skill.level] ?? "#00e5ff";
     return (
-        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 hover:border-white/20 transition-colors">
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-            <span className="text-white/90 text-xs font-mono font-medium">{skill.name}</span>
-            <span className="text-white/35 text-xs font-mono">{skill.level}</span>
+        <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 999, padding: "8px 16px",
+            transition: "border-color 0.2s",
+        }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
+            <span style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, fontFamily: "monospace", fontWeight: 500 }}>
+                {skill.name}
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, fontFamily: "monospace" }}>
+                {skill.level}
+            </span>
         </div>
-    );
-}
-
-function ProjectCard({ project, index }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 + index * 0.07 }}
-        >
-            <Link href={`/projects/${project._id}`}>
-                <div className="group bg-[#0d1421] border border-white/5 rounded-2xl p-5 hover:border-[#00e5ff]/20 transition-all duration-300 cursor-pointer">
-                    <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[#00e5ff] text-xs font-mono bg-[#00e5ff]/10 border border-[#00e5ff]/20 rounded-full px-2.5 py-0.5">
-                                {project.category}
-                            </span>
-                            <span className={`text-xs font-mono border rounded-full px-2.5 py-0.5 ${difficultyColor(project.difficulty)}`}>
-                                {project.difficulty}
-                            </span>
-                        </div>
-                        <ArrowUpRight size={16} className="text-white/20 group-hover:text-[#00e5ff] transition-colors shrink-0 mt-0.5" />
-                    </div>
-                    <h3 className="text-white font-mono font-semibold text-sm mb-1 group-hover:text-[#00e5ff] transition-colors">
-                        {project.title}
-                    </h3>
-                    <p className="text-white/40 text-xs font-mono line-clamp-2 mb-4">{project.tagline}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                        {project.techStack?.slice(0, 4).map(tech => (
-                            <span key={tech} className="text-white/50 text-xs font-mono bg-white/5 rounded-md px-2 py-0.5">
-                                {tech}
-                            </span>
-                        ))}
-                        {project.techStack?.length > 4 && (
-                            <span className="text-white/30 text-xs font-mono px-1">
-                                +{project.techStack.length - 4}
-                            </span>
-                        )}
-                    </div>
-                </div>
-            </Link>
-        </motion.div>
     );
 }
 
 function StatPill({ label, value }) {
     return (
-        <div className="flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-6 py-4">
-            <span className="text-white font-bold font-mono text-2xl">{value}</span>
-            <span className="text-white/40 text-xs font-mono mt-1">{label}</span>
+        <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 16, padding: "16px 24px",
+        }}>
+            <span style={{ color: "#fff", fontWeight: 700, fontFamily: "monospace", fontSize: 22 }}>
+                {value}
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "monospace", marginTop: 4 }}>
+                {label}
+            </span>
         </div>
     );
 }
 
-function Skeleton({ className }) {
-    return <div className={`bg-white/5 rounded-xl animate-pulse ${className}`} />;
+function LinkButton({ href, icon: Icon, label }) {
+    if (!href) return null;
+    return (
+        <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+                display: "flex", alignItems: "center", gap: 6,
+                color: "rgba(255,255,255,0.4)", fontSize: 12,
+                fontFamily: "monospace", textDecoration: "none",
+                transition: "color 0.2s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = "#00e5ff"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+        >
+            <Icon size={13} />
+            {label}
+            <ArrowUpRight size={11} />
+        </a>
+    );
+}
+
+// ── skeleton ───────────────────────────────────────────────────────────────
+
+function Pulse({ style }) {
+    return (
+        <div style={{
+            background: "rgba(255,255,255,0.05)", borderRadius: 8,
+            animation: "pulse 1.5s ease-in-out infinite",
+            ...style,
+        }} />
+    );
 }
 
 function ProfileSkeleton() {
     return (
-        <div className="max-w-4xl mx-auto px-4 py-12 space-y-6">
-            <div className="bg-[#0d1421] border border-white/5 rounded-3xl p-8">
-                <div className="flex flex-col sm:flex-row gap-6 items-start">
-                    <Skeleton className="w-24 h-24 rounded-full shrink-0" />
-                    <div className="flex-1 space-y-3">
-                        <Skeleton className="h-7 w-48" />
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-4 w-full max-w-md" />
-                        <Skeleton className="h-4 w-3/4" />
+        <div style={{ maxWidth: 896, margin: "0 auto", padding: "48px 24px" }}>
+            <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
+            <div style={{ background: "#0d1421", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 24, padding: 32, marginBottom: 16 }}>
+                <div style={{ display: "flex", gap: 24 }}>
+                    <Pulse style={{ width: 96, height: 96, borderRadius: "50%", flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                        <Pulse style={{ height: 28, width: 200, marginBottom: 12 }} />
+                        <Pulse style={{ height: 16, width: 140, marginBottom: 12 }} />
+                        <Pulse style={{ height: 14, width: "90%", marginBottom: 8 }} />
+                        <Pulse style={{ height: 14, width: "70%" }} />
                     </div>
                 </div>
             </div>
-            <Skeleton className="h-40 w-full rounded-3xl" />
-            <Skeleton className="h-64 w-full rounded-3xl" />
+            <Pulse style={{ height: 96, borderRadius: 16, marginBottom: 16 }} />
+            <Pulse style={{ height: 200, borderRadius: 16 }} />
         </div>
     );
 }
+
+// ── card shell ─────────────────────────────────────────────────────────────
+
+const CARD = {
+    background: "#0d1421",
+    border: "1px solid rgba(255,255,255,0.06)",
+    borderRadius: 24,
+    padding: 24,
+};
 
 // ── main page ──────────────────────────────────────────────────────────────
 
@@ -175,11 +199,17 @@ export default function DeveloperProfile() {
 
     if (isError || !developer) {
         return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-                <Code2 size={40} className="text-white/20" />
-                <p className="text-white/40 font-mono text-sm">Developer not found.</p>
+            <div style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+                <Code2 size={40} style={{ color: "rgba(255,255,255,0.2)" }} />
+                <p style={{ color: "rgba(255,255,255,0.4)", fontFamily: "monospace", fontSize: 14 }}>
+                    Developer not found.
+                </p>
                 <Link href="/explore">
-                    <button className="text-[#00e5ff] text-xs font-mono border border-[#00e5ff]/20 rounded-full px-4 py-2 hover:bg-[#00e5ff]/10 transition-colors">
+                    <button style={{
+                        color: "#00e5ff", fontSize: 13, fontFamily: "monospace",
+                        border: "1px solid rgba(0,229,255,0.2)", borderRadius: 999,
+                        padding: "8px 16px", background: "transparent", cursor: "pointer",
+                    }}>
                         ← Back to Explore
                     </button>
                 </Link>
@@ -187,60 +217,66 @@ export default function DeveloperProfile() {
         );
     }
 
-    const skillCount   = developer.skills?.length ?? 0;
-    const projectCount = developer.projects?.length ?? 0;
-    const hasExp       = developer.experienceEntries?.length > 0;
+    const hasExp          = developer.experienceEntries?.length > 0;
     const hasTestimonials = developer.testimonials?.length > 0;
+    const hasSkills       = developer.skills?.length > 0;
+    const hasProjects     = developer.projects?.length > 0;
+    const skillCount      = developer.skills?.length ?? 0;
+    const projectCount    = developer.projects?.length ?? 0;
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-12 space-y-5">
+        <div style={{ maxWidth: 896, margin: "0 auto", padding: "48px 24px" }}>
 
-            {/* ── Hero Card ───────────────────────────────────────── */}
+            {/* ── Hero Card ───────────────────────────────────── */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
-                className="bg-[#0d1421] border border-white/5 rounded-3xl p-8 relative overflow-hidden"
+                style={{ ...CARD, position: "relative", overflow: "hidden", marginBottom: 12 }}
             >
-                <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#00e5ff]/5 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-[#7c3aed]/5 rounded-full blur-3xl pointer-events-none" />
+                {/* Glow blobs */}
+                <div style={{ position: "absolute", top: -80, right: -80, width: 260, height: 260, background: "rgba(0,229,255,0.05)", borderRadius: "50%", filter: "blur(60px)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", bottom: -80, left: -80, width: 260, height: 260, background: "rgba(124,58,237,0.05)", borderRadius: "50%", filter: "blur(60px)", pointerEvents: "none" }} />
 
-                <div className="relative flex flex-col sm:flex-row gap-6 items-start">
+                <div style={{ position: "relative", display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
+                    {/* Avatar */}
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.15 }}
-                        className="shrink-0"
                     >
-                        <Avatar user={developer} size="lg" />
+                        <Avatar user={developer} size={96} />
                     </motion.div>
 
-                    <div className="flex-1 min-w-0">
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <h1 className="text-white text-2xl font-bold font-mono">
-                                {developer.name}
-                            </h1>
+                    {/* Info */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        style={{ flex: 1, minWidth: 220 }}
+                    >
+                        {/* Name */}
+                        <h1 style={{ color: "#fff", fontSize: 26, fontWeight: 700, fontFamily: "monospace", margin: 0 }}>
+                            {developer.name}
+                        </h1>
 
-                            {/* Title */}
-                            <p className="text-[#00e5ff] text-sm font-mono mt-0.5">
-                                {developer.title ||
-                                    (developer.skills?.[0]
-                                        ? `${developer.skills[0].level} ${developer.skills[0].name} Developer`
-                                        : "Full-Stack Engineer")}
-                            </p>
+                        {/* Title */}
+                        <p style={{ color: "#00e5ff", fontSize: 14, fontFamily: "monospace", marginTop: 4, marginBottom: 0 }}>
+                            {developer.title ||
+                                (developer.skills?.[0]
+                                    ? `${developer.skills[0].level} ${developer.skills[0].name} Developer`
+                                    : "Full-Stack Developer")}
+                        </p>
 
-                            {/* Location */}
-                            {developer.location && (
-                                <p className="flex items-center gap-1.5 text-white/40 text-xs font-mono mt-1">
-                                    <MapPin size={12} />
+                        {/* Location */}
+                        {developer.location && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
+                                <MapPin size={12} style={{ color: "rgba(255,255,255,0.35)" }} />
+                                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, fontFamily: "monospace" }}>
                                     {developer.location}
-                                </p>
-                            )}
-                        </motion.div>
+                                </span>
+                            </div>
+                        )}
 
                         {/* Bio */}
                         {developer.bio && (
@@ -248,7 +284,10 @@ export default function DeveloperProfile() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.28 }}
-                                className="text-white/50 text-sm font-mono mt-3 leading-relaxed max-w-xl"
+                                style={{
+                                    color: "rgba(255,255,255,0.5)", fontSize: 13, fontFamily: "monospace",
+                                    marginTop: 12, lineHeight: 1.7, maxWidth: 540,
+                                }}
                             >
                                 {developer.bio}
                             </motion.p>
@@ -259,78 +298,47 @@ export default function DeveloperProfile() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.35 }}
-                            className="flex flex-wrap items-center gap-4 mt-4"
+                            style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 16, alignItems: "center" }}
                         >
-                            {developer.github && (
-                                <Link
-                                    href={developer.github}
-                                    target="_blank" rel="noopener noreferrer"
-                                >
-                                    <a className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors">
-                                        <GithubIcon size={14} />
-                                        GitHub
-                                        <ArrowUpRight size={11} />
-                                    </a>
-                                </Link>
-                            )}
-                            {developer.linkedin && (
-                                <Link
-                                    href={developer.linkedin}
-                                    target="_blank" rel="noopener noreferrer"
-                                >
-                                    <a className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors">
-                                        <LinkedInIcon size={14} />
-                                        LinkedIn
-                                        <ArrowUpRight size={11} />
-                                    </a>
-                                </Link>
-                            )}
-                            {developer.portfolio && (
-                                <Link
-                                    href={developer.portfolio}
-                                    target="_blank" rel="noopener noreferrer"
-                                >
-                                    <a className="flex items-center gap-1.5 text-white/40 hover:text-[#00e5ff] text-xs font-mono transition-colors">
-                                        <Globe size={14} />
-                                        Portfolio
-                                        <ArrowUpRight size={11} />
-                                    </a>
-                                </Link>
-                            )}
-                            <span className="flex items-center gap-1.5 text-white/30 text-xs font-mono">
+                            {developer.github   && <LinkButton href={developer.github}    icon={GithubIcon}   label="GitHub"    />}
+                            {developer.linkedin  && <LinkButton href={developer.linkedin}   icon={LinkedInIcon} label="LinkedIn"  />}
+                            {developer.portfolio && <LinkButton href={developer.portfolio}  icon={Globe}        label="Portfolio" />}
+                            <span style={{ display: "flex", alignItems: "center", gap: 5, color: "rgba(255,255,255,0.3)", fontSize: 12, fontFamily: "monospace" }}>
                                 <Calendar size={13} />
                                 Joined {formatJoinDate(developer.createdAt)}
                             </span>
                         </motion.div>
-                    </div>
+                    </motion.div>
                 </div>
             </motion.div>
 
-            {/* ── Stats row ───────────────────────────────────────── */}
+            {/* ── Stats Row ───────────────────────────────────── */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.42 }}
-                className="flex flex-wrap gap-3"
+                style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 12 }}
             >
                 <StatPill label="Projects" value={projectCount} />
-                <StatPill label="Skills"   value={skillCount} />
+                <StatPill label="Skills"   value={skillCount}   />
                 <StatPill label="Joined"   value={formatJoinDate(developer.createdAt).split(" ")[1]} />
             </motion.div>
 
-            {/* ── Tech Stack ──────────────────────────────────────── */}
-            {developer.skills?.length > 0 && (
+            {/* ── Tech Stack ──────────────────────────────────── */}
+            {hasSkills && (
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.35 }}
-                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
+                    style={{ ...CARD, marginBottom: 12 }}
                 >
-                    <div className="flex items-center gap-2 mb-5">
-                        <Layers size={15} className="text-[#00e5ff]" />
-                        <h2 className="text-white font-mono font-semibold text-sm">Tech Stack</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+                        <Layers size={15} style={{ color: "#00e5ff" }} />
+                        <h2 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 14, margin: 0 }}>
+                            Tech Stack
+                        </h2>
                     </div>
-                    <div className="flex flex-wrap gap-3">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
                         {developer.skills.map((skill, i) => (
                             <motion.div
                                 key={i}
@@ -345,22 +353,28 @@ export default function DeveloperProfile() {
                 </motion.div>
             )}
 
-            {/* ── Experience Timeline ─────────────────────────────── */}
+            {/* ── Experience Timeline ─────────────────────────── */}
             {hasExp && (
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.45 }}
-                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
+                    style={{ ...CARD, marginBottom: 12 }}
                 >
-                    <div className="flex items-center gap-2 mb-6">
-                        <Briefcase size={15} className="text-[#00e5ff]" />
-                        <h2 className="text-white font-mono font-semibold text-sm">Experience</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
+                        <Briefcase size={15} style={{ color: "#00e5ff" }} />
+                        <h2 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 14, margin: 0 }}>
+                            Experience
+                        </h2>
                     </div>
 
-                    <div className="relative pl-6 space-y-7">
+                    {/* Timeline */}
+                    <div style={{ position: "relative", paddingLeft: 24 }}>
                         {/* Vertical line */}
-                        <div className="absolute left-1.5 top-2 bottom-2 w-px bg-white/10" />
+                        <div style={{
+                            position: "absolute", left: 5, top: 8, bottom: 8,
+                            width: 1, background: "rgba(255,255,255,0.08)",
+                        }} />
 
                         {developer.experienceEntries.map((entry, i) => (
                             <motion.div
@@ -368,19 +382,27 @@ export default function DeveloperProfile() {
                                 initial={{ opacity: 0, x: -8 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: 0.5 + i * 0.07 }}
-                                className="relative"
+                                style={{
+                                    position: "relative",
+                                    marginBottom: i < developer.experienceEntries.length - 1 ? 28 : 0,
+                                }}
                             >
                                 {/* Dot */}
-                                <div className="absolute -left-5.25 top-1.5 w-3 h-3 rounded-full border-2 border-[#00e5ff]/60 bg-[#0d1421]" />
+                                <div style={{
+                                    position: "absolute", left: -20, top: 5,
+                                    width: 12, height: 12, borderRadius: "50%",
+                                    border: "2px solid rgba(0,229,255,0.6)",
+                                    background: "#0d1421",
+                                }} />
 
-                                <h3 className="text-white font-mono font-semibold text-sm">{entry.role}</h3>
-                                <p className="text-[#00e5ff] text-xs font-mono mt-0.5">
-                                    {entry.company}
-                                    {entry.company && entry.period ? " · " : ""}
-                                    {entry.period}
+                                <h3 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 14, margin: "0 0 4px" }}>
+                                    {entry.role}
+                                </h3>
+                                <p style={{ color: "#00e5ff", fontSize: 12, fontFamily: "monospace", margin: "0 0 6px" }}>
+                                    {[entry.company, entry.period].filter(Boolean).join(" · ")}
                                 </p>
                                 {entry.description && (
-                                    <p className="text-white/50 text-xs font-mono mt-2 leading-relaxed">
+                                    <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontFamily: "monospace", lineHeight: 1.65, margin: 0 }}>
                                         {entry.description}
                                     </p>
                                 )}
@@ -390,43 +412,51 @@ export default function DeveloperProfile() {
                 </motion.div>
             )}
 
-            {/* ── Testimonials ────────────────────────────────────── */}
+            {/* ── Testimonials ────────────────────────────────── */}
             {hasTestimonials && (
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
+                    style={{ ...CARD, marginBottom: 12 }}
                 >
-                    <div className="flex items-center gap-2 mb-5">
-                        <Quote size={15} className="text-[#00e5ff]" />
-                        <h2 className="text-white font-mono font-semibold text-sm">Testimonials</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+                        <Quote size={15} style={{ color: "#00e5ff" }} />
+                        <h2 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 14, margin: 0 }}>
+                            Testimonials
+                        </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
                         {developer.testimonials.map((t, i) => (
                             <motion.div
                                 key={i}
                                 initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.55 + i * 0.07 }}
-                                className="bg-white/5 border border-white/10 rounded-2xl p-5"
+                                style={{
+                                    background: "rgba(255,255,255,0.03)",
+                                    border: "1px solid rgba(255,255,255,0.08)",
+                                    borderRadius: 16, padding: 20,
+                                }}
                             >
-                                <p className="text-white/60 text-xs font-mono italic leading-relaxed">
+                                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, fontFamily: "monospace", fontStyle: "italic", lineHeight: 1.75, margin: "0 0 16px" }}>
                                     &ldquo;{t.quote}&rdquo;
                                 </p>
-                                <div className="flex items-center gap-2 mt-4">
-                                    <div
-                                        className="w-7 h-7 rounded-full flex items-center justify-center text-[#0a0f1a] font-bold text-xs shrink-0"
-                                        style={{ background: "linear-gradient(135deg, #00e5ff, #7c3aed)" }}
-                                    >
+                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                    <div style={{
+                                        width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
+                                        background: "linear-gradient(135deg, #00e5ff, #7c3aed)",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: "#0a0f1a", fontWeight: 700, fontSize: 11, fontFamily: "monospace",
+                                    }}>
                                         {(t.authorName ?? "?").charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <p className="text-white/70 text-xs font-mono font-semibold leading-none">
+                                        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 11, fontFamily: "monospace", fontWeight: 600, margin: 0, lineHeight: 1 }}>
                                             {t.authorName}
                                         </p>
-                                        <p className="text-white/30 text-xs font-mono mt-0.5">
+                                        <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "monospace", margin: "4px 0 0" }}>
                                             {t.authorRole}
                                         </p>
                                     </div>
@@ -437,43 +467,104 @@ export default function DeveloperProfile() {
                 </motion.div>
             )}
 
-            {/* ── Projects ────────────────────────────────────────── */}
-            {developer.projects?.length > 0 && (
+            {/* ── Projects ────────────────────────────────────── */}
+            {hasProjects && (
                 <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.55 }}
-                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-6"
+                    style={CARD}
                 >
-                    <div className="flex items-center justify-between mb-5">
-                        <div className="flex items-center gap-2">
-                            <Code2 size={15} className="text-[#00e5ff]" />
-                            <h2 className="text-white font-mono font-semibold text-sm">Projects</h2>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <Code2 size={15} style={{ color: "#00e5ff" }} />
+                            <h2 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 14, margin: 0 }}>
+                                Projects
+                            </h2>
                         </div>
-                        <Link href={`/explore?owner=${id}`}>
-                            <span className="flex items-center gap-1 text-white/30 text-xs font-mono hover:text-[#00e5ff] transition-colors">
+                        <Link href={`/explore?owner=${id}`} style={{ textDecoration: "none" }}>
+                            <span style={{
+                                display: "flex", alignItems: "center", gap: 4,
+                                color: "rgba(255,255,255,0.3)", fontSize: 12, fontFamily: "monospace",
+                                transition: "color 0.2s",
+                            }}
+                                onMouseEnter={e => { e.currentTarget.style.color = "#00e5ff"; }}
+                                onMouseLeave={e => { e.currentTarget.style.color = "rgba(255,255,255,0.3)"; }}
+                            >
                                 View all <ChevronRight size={13} />
                             </span>
                         </Link>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {developer.projects.map((project, i) => (
-                            <ProjectCard key={project._id} project={project} index={i} />
-                        ))}
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+                        {developer.projects.map((project, i) => {
+                            const dc = difficultyColor(project.difficulty);
+                            return (
+                                <motion.div
+                                    key={project._id}
+                                    initial={{ opacity: 0, y: 16 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.5 + i * 0.07 }}
+                                >
+                                    <Link href={`/projects/${project._id}`} style={{ textDecoration: "none" }}>
+                                        <div
+                                            style={{
+                                                background: "rgba(255,255,255,0.03)",
+                                                border: "1px solid rgba(255,255,255,0.07)",
+                                                borderRadius: 16, padding: 20,
+                                                cursor: "pointer",
+                                                transition: "border-color 0.25s",
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,229,255,0.2)"; }}
+                                            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; }}
+                                        >
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                                                    <span style={{ color: "#00e5ff", fontSize: 11, fontFamily: "monospace", background: "rgba(0,229,255,0.1)", border: "1px solid rgba(0,229,255,0.2)", borderRadius: 999, padding: "2px 10px" }}>
+                                                        {project.category}
+                                                    </span>
+                                                    <span style={{ color: dc.color, fontSize: 11, fontFamily: "monospace", background: dc.bg, border: `1px solid ${dc.border}`, borderRadius: 999, padding: "2px 10px" }}>
+                                                        {project.difficulty}
+                                                    </span>
+                                                </div>
+                                                <ArrowUpRight size={15} style={{ color: "rgba(255,255,255,0.2)", flexShrink: 0 }} />
+                                            </div>
+                                            <h3 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 13, margin: "0 0 6px" }}>
+                                                {project.title}
+                                            </h3>
+                                            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, fontFamily: "monospace", margin: "0 0 16px", lineHeight: 1.55, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                                                {project.tagline}
+                                            </p>
+                                            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                                                {project.techStack?.slice(0, 4).map(tech => (
+                                                    <span key={tech} style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, fontFamily: "monospace", background: "rgba(255,255,255,0.05)", borderRadius: 6, padding: "2px 8px" }}>
+                                                        {tech}
+                                                    </span>
+                                                ))}
+                                                {project.techStack?.length > 4 && (
+                                                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "monospace" }}>
+                                                        +{project.techStack.length - 4}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </motion.div>
             )}
 
-            {/* ── Empty state ─────────────────────────────────────── */}
-            {!developer.skills?.length && !developer.projects?.length &&
-             !hasExp && !hasTestimonials && (
+            {/* ── Empty state ─────────────────────────────────── */}
+            {!hasSkills && !hasProjects && !hasExp && !hasTestimonials && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
-                    className="bg-[#0d1421] border border-white/5 rounded-3xl p-12 text-center"
+                    style={{ ...CARD, textAlign: "center", padding: "64px 24px" }}
                 >
-                    <p className="text-white/20 font-mono text-sm">
+                    <p style={{ color: "rgba(255,255,255,0.2)", fontFamily: "monospace", fontSize: 14 }}>
                         This developer hasn&apos;t added any details yet.
                     </p>
                 </motion.div>
