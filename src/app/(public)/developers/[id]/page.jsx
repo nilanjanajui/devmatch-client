@@ -25,6 +25,10 @@ function ordinal(n) {
     const s = ["th", "st", "nd", "rd"], v = n % 100;
     return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
+function getInitials(name) {
+    if (!name) return "?";
+    return name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+}
 
 // ── SVG icons ──────────────────────────────────────────────────────────────
 
@@ -158,23 +162,22 @@ export default function DeveloperProfile() {
         );
     }
 
-    const stats     = dev.stats ?? {};
-    const barSkills = (dev.skillProficiency ?? []).slice(0, 3);
-    const tagSkills = dev.skillTags ?? [];
-    const hasSkills = barSkills.length > 0 || tagSkills.length > 0;
-    const hasExp    = (dev.experience ?? []).length > 0;
-    const hasProj   = (dev.featuredProjects ?? []).length > 0;
+    const stats      = dev.stats ?? {};
+    const barSkills  = (dev.skillProficiency ?? []).slice(0, 3);
+    const tagSkills  = dev.skillTags ?? [];
+    const hasSkills  = barSkills.length > 0 || tagSkills.length > 0;
+    const hasExp     = (dev.experience ?? []).length > 0;
+    const hasProj    = (dev.featuredProjects ?? []).length > 0;
     const testimonials = (dev.testimonials ?? []).map(t => ({
         quote:  t.quote  ?? "",
         author: t.author ?? t.authorName ?? "",
         role:   t.role   ?? t.authorRole  ?? "",
-        avatar: t.avatar ?? "",
     }));
     const hasTesti = testimonials.length > 0;
 
     return (
         <div style={{ maxWidth: 980, margin: "0 auto", padding: "40px 24px 80px" }}>
-            <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}} @keyframes grow{from{width:0}}`}</style>
+            <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
 
             {/* ══ HERO ══════════════════════════════════════════════════ */}
             <motion.div
@@ -237,15 +240,14 @@ export default function DeveloperProfile() {
                             {dev.portfolio ? (
                                 <a href={dev.portfolio} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
                                     <button
-                                        style={{ padding: "9px 22px", borderRadius: 8, fontSize: 13, fontFamily: "monospace", fontWeight: 500, background: "rgba(0,188,212,0.1)", border: "1px solid rgba(0,188,212,0.3)", color: "#00bcd4", cursor: "pointer", transition: "all 0.2s" }}
-                                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,188,212,0.18)"; }}
-                                        onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,188,212,0.1)"; }}>
+                                        style={{ padding: "9px 22px", borderRadius: 8, fontSize: 13, fontFamily: "monospace", fontWeight: 500, background: "transparent", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", cursor: "pointer", transition: "all 0.2s" }}
+                                        onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)"; }}
+                                        onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)"; }}>
                                         Hire Me
                                     </button>
                                 </a>
                             ) : (
-                                <button
-                                    style={{ padding: "9px 22px", borderRadius: 8, fontSize: 13, fontFamily: "monospace", fontWeight: 500, background: "rgba(0,188,212,0.1)", border: "1px solid rgba(0,188,212,0.3)", color: "#00bcd4", cursor: "pointer" }}>
+                                <button style={{ padding: "9px 22px", borderRadius: 8, fontSize: 13, fontFamily: "monospace", fontWeight: 500, background: "transparent", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", cursor: "pointer" }}>
                                     Hire Me
                                 </button>
                             )}
@@ -291,7 +293,7 @@ export default function DeveloperProfile() {
                             {dev.bio || "No bio added yet."}
                         </p>
 
-                        {/* Icon-only social links — matches design exactly */}
+                        {/* Icon-only social links */}
                         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                             {dev.github && (
                                 <a href={dev.github} target="_blank" rel="noopener noreferrer"
@@ -327,7 +329,7 @@ export default function DeveloperProfile() {
                             style={CARD}>
                             <SecHead icon={Zap} label="Tech Stack" />
 
-                            {/* Progress bars — solid single color per bar */}
+                            {/* Progress bars */}
                             {barSkills.length > 0 && (
                                 <div style={{ display: "flex", flexDirection: "column", gap: 20, marginBottom: tagSkills.length > 0 ? 22 : 0 }}>
                                     {barSkills.map((skill, i) => (
@@ -340,7 +342,6 @@ export default function DeveloperProfile() {
                                                     {skill.proficiency}%
                                                 </span>
                                             </div>
-                                            {/* Track */}
                                             <div style={{ height: 4, background: "rgba(255,255,255,0.07)", borderRadius: 99, overflow: "hidden" }}>
                                                 <motion.div
                                                     initial={{ width: 0 }}
@@ -397,7 +398,7 @@ export default function DeveloperProfile() {
                                         onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,188,212,0.25)"; }}
                                         onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"; }}>
 
-                                        {/* Banner with gradient overlay */}
+                                        {/* ── Banner image with title OVERLAID inside ── */}
                                         <div style={{ height: 160, position: "relative", overflow: "hidden" }}>
                                             {proj.image ? (
                                                 // eslint-disable-next-line @next/next/no-img-element
@@ -408,28 +409,33 @@ export default function DeveloperProfile() {
                                                     <Code2 size={28} style={{ color: "rgba(255,255,255,0.1)" }} />
                                                 </div>
                                             )}
-                                            {/* Gradient overlay fading to card bg */}
-                                            <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 60, background: "linear-gradient(to bottom, transparent, #0d1421)" }} />
+                                            {/* Gradient fade from transparent → card bg */}
+                                            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, transparent 25%, rgba(13,20,33,0.92) 80%, rgba(13,20,33,0.98))" }} />
+                                            {/* Title overlaid at bottom of image */}
+                                            <h3 style={{
+                                                position: "absolute", bottom: 12, left: 14, right: 14,
+                                                color: "#fff", fontFamily: "monospace", fontWeight: 600,
+                                                fontSize: 14, margin: 0, lineHeight: 1.3,
+                                            }}>
+                                                {proj.title}
+                                            </h3>
                                         </div>
 
-                                        {/* Content */}
-                                        <div style={{ padding: "14px 14px 16px" }}>
-                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-                                                <h3 style={{ color: "#fff", fontFamily: "monospace", fontWeight: 600, fontSize: 14, margin: 0, lineHeight: 1.3 }}>
-                                                    {proj.title}
-                                                </h3>
-                                                <ArrowUpRight size={15} style={{ color: "rgba(255,255,255,0.2)", flexShrink: 0, marginTop: 1 }} />
-                                            </div>
+                                        {/* ── Content below image ── */}
+                                        <div style={{ padding: "12px 14px 14px" }}>
                                             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, fontFamily: "monospace", margin: "0 0 12px", lineHeight: 1.65, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                                                 {proj.description}
                                             </p>
-                                            {/* Tags */}
-                                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                                                {(proj.tags ?? []).map((tag, ti) => (
-                                                    <span key={ti} style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, fontFamily: "monospace", letterSpacing: "0.06em" }}>
-                                                        {tag}
-                                                    </span>
-                                                ))}
+                                            {/* Tags row + arrow at right */}
+                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                                    {(proj.tags ?? []).map((tag, ti) => (
+                                                        <span key={ti} style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, fontFamily: "monospace", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <ArrowUpRight size={14} style={{ color: "rgba(255,255,255,0.2)", flexShrink: 0 }} />
                                             </div>
                                         </div>
                                     </motion.div>
@@ -504,15 +510,14 @@ export default function DeveloperProfile() {
                                                     &ldquo;{t.quote}&rdquo;
                                                 </p>
                                                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                                    {/* Avatar circle */}
+                                                    {/* Avatar circle — always shows initials, never renders URL as text */}
                                                     <div style={{
                                                         width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
                                                         background: "linear-gradient(135deg, #00bcd4, #7c3aed)",
                                                         display: "flex", alignItems: "center", justifyContent: "center",
                                                         color: "#0a0f1a", fontWeight: 700, fontSize: 11, fontFamily: "monospace",
                                                     }}>
-                                                        {t.avatar
-                                                            || (t.author ?? "?").split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase()}
+                                                        {getInitials(t.author)}
                                                     </div>
                                                     <div>
                                                         <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, fontFamily: "monospace", fontWeight: 700, margin: 0, lineHeight: 1 }}>
