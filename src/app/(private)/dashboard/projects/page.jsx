@@ -2,33 +2,126 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FolderPlus, Plus, Pencil, Trash2, Users } from "lucide-react";
+import { FolderPlus, Plus, Pencil, Trash2, Users, AlertTriangle, X } from "lucide-react";
+import { toast } from "sonner";
+import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext"; // adjust to your auth path
+
+/* ── Delete confirmation modal ── */
+function DeleteConfirmModal({ project, onCancel, onConfirm, deleting }) {
+    return (
+        <div style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            background: "rgba(11,19,38,0.75)", backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: "24px",
+        }}>
+            <div style={{
+                width: "100%", maxWidth: "420px",
+                background: "#0d1421", border: "1px solid rgba(255,100,100,0.2)",
+                borderRadius: "16px", padding: "28px",
+            }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+                    <div style={{
+                        width: "44px", height: "44px", borderRadius: "12px",
+                        background: "rgba(255,100,100,0.1)", border: "1px solid rgba(255,100,100,0.2)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                        <AlertTriangle size={20} color="#ff7878" />
+                    </div>
+                    <button
+                        onClick={onCancel}
+                        style={{ background: "none", border: "none", color: "#c2c6d6", cursor: "pointer", padding: 0 }}
+                    >
+                        <X size={18} />
+                    </button>
+                </div>
+
+                <h3 style={{
+                    fontFamily: "'Space Grotesk', sans-serif", fontSize: "18px", fontWeight: 700,
+                    color: "#dae2fd", margin: "0 0 8px",
+                }}>
+                    Delete &ldquo;{project.title}&rdquo;?
+                </h3>
+                <p style={{ fontSize: "13px", color: "rgba(194,198,214,0.7)", lineHeight: 1.6, margin: "0 0 24px" }}>
+                    This will permanently delete the project and cannot be undone. Applicants will lose access to it.
+                </p>
+
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button
+                        onClick={onCancel}
+                        disabled={deleting}
+                        style={{
+                            flex: 1, padding: "10px 0", borderRadius: "8px",
+                            background: "rgba(173,198,255,0.08)", border: "1px solid rgba(173,198,255,0.15)",
+                            color: "#adc6ff", fontSize: "13px", fontWeight: 600, cursor: "pointer",
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        disabled={deleting}
+                        style={{
+                            flex: 1, padding: "10px 0", borderRadius: "8px",
+                            background: "#ef4444", border: "none",
+                            color: "#fff", fontSize: "13px", fontWeight: 700, cursor: deleting ? "wait" : "pointer",
+                        }}
+                    >
+                        {deleting ? "Deleting…" : "Delete Project"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function MyProjectsPage() {
     const { user } = useAuth();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [pendingDelete, setPendingDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+
+    const fetchProjects = async () => {
+        try {
+            const { data } = await axiosInstance.get("/projects", {
+                params: { mine: true, limit: 100 },
+            });
+            setProjects(Array.isArray(data) ? data : data.projects || data.data || []);
+        } catch (err) {
+            console.error(err);
+            toast.error("Couldn't load your projects. Please try again.");
+            setProjects([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/projects/my-projects`,
-                    { credentials: "include" }
-                );
-                const data = await res.json();
-                setProjects(Array.isArray(data) ? data : data.projects || data.data || []);
-            } catch (err) {
-                console.error(err);
-                setProjects([]);
-            } finally {
-                setLoading(false);
-            }
-        };
+        if (!user) return;
 
-        if (user) fetchProjects();
+        const timer = setTimeout(() => {
+            fetchProjects();
+        }, 0);
+
+        return () => clearTimeout(timer);
     }, [user]);
+
+    const handleConfirmDelete = async () => {
+        if (!pendingDelete) return;
+        setDeleting(true);
+        try {
+            await axiosInstance.delete(`/projects/${pendingDelete._id}`);
+            setProjects((prev) => prev.filter((p) => p._id !== pendingDelete._id));
+            toast.success(`"${pendingDelete.title}" was deleted.`);
+            setPendingDelete(null);
+        } catch (err) {
+            console.error(err);
+            toast.error(err?.response?.data?.message || "Failed to delete project.");
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     // ── Loading ──
     if (loading) {
@@ -212,6 +305,15 @@ export default function MyProjectsPage() {
             padding: "96px 48px 48px",
             fontFamily: "'Inter', sans-serif",
         }}>
+            {pendingDelete && (
+                <DeleteConfirmModal
+                    project={pendingDelete}
+                    deleting={deleting}
+                    onCancel={() => setPendingDelete(null)}
+                    onConfirm={handleConfirmDelete}
+                />
+            )}
+
             {/* Header */}
             <div style={{
                 display: "flex",
@@ -354,7 +456,7 @@ export default function MyProjectsPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                             <Users size={14} color="#4cd7f6" />
                             <span style={{ fontSize: "13px", color: "#c2c6d6" }}>
-                                {project.applicationCount || 0} application{project.applicationCount !== 1 ? "s" : ""}
+                                {project.application_count || 0} application{project.application_count !== 1 ? "s" : ""}
                             </span>
                         </div>
 
@@ -433,10 +535,7 @@ export default function MyProjectsPage() {
                                 }}
                                 onMouseEnter={e => e.currentTarget.style.background = "rgba(255,100,100,0.15)"}
                                 onMouseLeave={e => e.currentTarget.style.background = "rgba(255,100,100,0.07)"}
-                                onClick={() => {
-                                    // wire up your delete modal/handler here
-                                    console.log("delete", project._id);
-                                }}
+                                onClick={() => setPendingDelete(project)}
                             >
                                 <Trash2 size={13} />
                             </button>
