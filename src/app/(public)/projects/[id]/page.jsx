@@ -7,6 +7,7 @@ import { useProject } from "@/hooks/useProjects";
 import axiosInstance from "@/lib/axios";
 import ApplyModal from "@/components/projects/ApplyModal";
 import { useAuth } from "@/context/AuthContext";
+import MessageButton from "@/components/messaging/MessageButton";
 
 /* ─── Helpers ─────────────────────────────────── */
 
@@ -424,6 +425,21 @@ export default function ProjectDetailsPage() {
                                     )}
                                 </div>
                             )}
+
+                            <MessageButton
+                                recipientId={project.ownerId}
+                                projectId={project._id}
+                                style={{
+                                    width: "100%", marginTop: 16, padding: "10px 0", borderRadius: 10,
+                                    background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.25)",
+                                    color: "#06B6D4", fontFamily: "'Space Grotesk',sans-serif",
+                                    fontSize: 13, fontWeight: 700, transition: "all 0.2s",
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(6,182,212,0.15)"; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "rgba(6,182,212,0.08)"; }}
+                            >
+                                Message Project Lead
+                            </MessageButton>
                         </div>
                     </div>
                 </div>
