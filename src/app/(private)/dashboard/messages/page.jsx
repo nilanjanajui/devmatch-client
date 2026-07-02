@@ -57,11 +57,11 @@ function Avatar({ name, image, size = 42 }) {
     );
 }
 
-
-export default function MessagesPage() {
+function MessagesInner() {
     const { user } = useAuth();
+    const searchParams = useSearchParams();
     const queryClient = useQueryClient();
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedId, setSelectedId] = useState(searchParams.get("conversationId"));
     const [draft, setDraft] = useState("");
     const scrollRef = useRef(null);
 
@@ -94,7 +94,7 @@ export default function MessagesPage() {
 
     useEffect(() => {
         if (!selectedId && conversations.length > 0) {
-            // Defer setting selectedId to avoid synchronous setState inside effect
+            // avoid synchronous setState inside effect to prevent cascading renders/lint warning
             const t = setTimeout(() => setSelectedId(conversations[0].id), 0);
             return () => clearTimeout(t);
         }
@@ -343,5 +343,13 @@ export default function MessagesPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function MessagesPage() {
+    return (
+        <Suspense fallback={null}>
+            <MessagesInner />
+        </Suspense>
     );
 }
